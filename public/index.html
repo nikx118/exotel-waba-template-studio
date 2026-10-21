@@ -1,0 +1,2112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WABA Template Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3C8.8 3 3 8.4 3 15c0 2.6.9 5 2.4 6.9L4 29l7.5-2.6c1.4.4 2.9.6 4.5.6 7.2 0 13-5.4 13-12S23.2 3 16 3z' fill='%230b7a6b'/%3E%3Cpath d='M10 12h12M10 17h8' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f2f3f0; --card:#fff; --ink:#17201c; --muted:#66706b; --line:#e1e4df; --soft:#f6f7f5;
+  --accent:#0b7a6b; --accent-soft:#e2f1ee;
+  --ok:#17834f; --ok-soft:#e3f3e9; --warn:#9a6300; --warn-soft:#fcf1da; --bad:#c03636; --bad-soft:#fbe6e6;
+  --wa-bg:#efe7de; --wa-head:#075e54; --wa-link:#027eb5;
+  --r:12px; --shadow:0 1px 2px rgba(20,30,25,.05),0 3px 10px rgba(20,30,25,.04);
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+h2{font-size:15px;margin:0;font-weight:650;letter-spacing:-.005em}
+button,input,select,textarea{font:inherit;color:inherit}
+code{font-family:var(--mono);font-size:12.5px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand b{display:block;font-size:15px;letter-spacing:-.01em}
+.brand small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:flex;gap:2px;margin:0 auto 0 16px}
+.tab-btn{border:0;background:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab-btn:hover{background:var(--soft);color:var(--ink)}
+.tab-btn.active{background:var(--accent-soft);color:var(--accent)}
+.count{font-size:11px;background:var(--line);color:var(--ink);padding:1px 7px;border-radius:99px;font-variant-numeric:tabular-nums}
+.dot-warn{width:7px;height:7px;border-radius:50%;background:#e09b12}
+.live{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);white-space:nowrap}
+.live .dot{width:8px;height:8px;border-radius:50%;background:#c3c7c4}
+.live.on .dot{background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+@media (max-width:820px){.top{flex-wrap:wrap}.tabs{order:3;width:100%;margin:0;overflow-x:auto}}
+
+main{max-width:1320px;margin:0 auto;padding:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.opt{font-weight:400;color:var(--muted);font-size:12px}
+.banner{background:var(--warn-soft);color:#6b4500;border:1px solid #f0d9a5;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px}
+.banner a{color:inherit;font-weight:700}
+
+/* compose layout */
+.compose{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+.editor,.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.side{position:sticky;top:74px}
+@media (max-width:1020px){.compose{grid-template-columns:1fr}.side{position:static}}
+
+/* fields */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;min-width:0}
+.lbl{font-size:12px;font-weight:600;color:var(--muted)}
+.hint{font-size:12px;color:var(--muted)}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=checkbox]{width:auto}
+textarea{resize:vertical;min-height:160px;line-height:1.55;display:block}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 12px}
+.grid-name{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:0 12px}
+@media (max-width:640px){.grid2,.grid-name{grid-template-columns:1fr}}
+.check{display:flex;gap:8px;align-items:center;margin:4px 0 14px;cursor:pointer}
+.input-row{display:flex;gap:8px}
+.input-row input{flex:1;min-width:0}
+.meta-row{display:flex;justify-content:space-between;gap:8px;margin-top:5px}
+.counter{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.counter.over{color:var(--bad);font-weight:700}
+
+/* segmented choices */
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:130px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:650}
+.seg button small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:1px}
+.seg button:hover{border-color:#c9cfc8}
+.seg button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.seg.small{margin-bottom:12px}
+.seg.small button{flex:none;min-width:0;padding:6px 13px;font-weight:600}
+
+/* "what do you want to send?" picker */
+.kinds{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px}
+.kinds button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;cursor:pointer}
+.kinds button:hover{border-color:#c9cfc8}
+.kinds button.on{border-color:var(--accent);background:var(--accent-soft)}
+.kinds .k-ic{font-size:20px;line-height:1;margin-bottom:5px}
+.kinds b{font-size:13.5px}
+.kinds button.on b{color:var(--accent)}
+.kinds small{color:var(--muted);font-size:12px}
+
+/* rich editor */
+.toolbar{display:flex;flex-wrap:wrap;gap:3px;padding:5px;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;background:var(--soft)}
+.toolbar button{border:1px solid transparent;background:none;border-radius:6px;padding:4px 9px;cursor:pointer;min-width:32px;line-height:1.3}
+.toolbar button:hover{background:#fff;border-color:var(--line)}
+.toolbar .push{margin-left:auto}
+.toolbar .accent{color:var(--accent);font-weight:650}
+.toolbar .sep{width:1px;background:var(--line);margin:3px 4px}
+.emoji-pop{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;padding:6px;border:1px solid var(--line);border-bottom:0;background:#fff}
+.emoji-pop button{border:0;background:none;font-size:18px;cursor:pointer;border-radius:6px;padding:3px 0}
+.emoji-pop button:hover{background:var(--soft)}
+#f-body{border-radius:0 0 9px 9px}
+.samples{margin-top:14px}
+.sample-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:6px}
+.sample{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.sample:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.sample input{border:0;box-shadow:none!important;padding:7px 9px;border-radius:0}
+.var-tag{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:0 9px;display:flex;align-items:center;font-weight:600}
+
+/* buttons */
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:#c6ccc5}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.xs{padding:3px 8px;font-size:12px}
+.btn.block{width:100%;padding:11px}
+.icon-btn{border:0;background:none;cursor:pointer;color:var(--muted);border-radius:6px;padding:3px 7px}
+.icon-btn:hover{background:var(--soft);color:var(--ink)}
+.icon-btn.danger:hover{color:var(--bad);background:var(--bad-soft)}
+.row-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.add-btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn-list{display:flex;flex-direction:column;gap:8px}
+.btn-row{border:1px solid var(--line);border-radius:9px;padding:10px 12px 4px;background:var(--soft)}
+.btn-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.btn-type{font-weight:650;font-size:13px}
+.btn-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 10px}
+.btn-fields .field{margin-bottom:8px}
+.full{grid-column:1/-1}
+@media (max-width:640px){.btn-fields{grid-template-columns:1fr}}
+
+/* media upload */
+.drop{border:1.5px dashed #cbd1ca;border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--soft);margin:0 0 8px}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.media-status{font-size:13px;margin-bottom:10px}
+.media-status.ok{color:var(--ok)} .media-status.bad{color:var(--bad)} .media-status.busy{color:var(--muted)}
+
+/* phone preview */
+.phone{border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:var(--wa-bg)}
+.phone-top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--wa-head);color:#fff}
+.phone-top small{display:block;opacity:.75;font-size:11px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#dfe7e4;color:var(--wa-head);display:grid;place-items:center;font-weight:800}
+.chat{padding:16px 14px 22px;min-height:280px;background-color:var(--wa-bg);background-image:radial-gradient(rgba(0,0,0,.04) 1px,transparent 1px);background-size:14px 14px}
+.msg{max-width:94%;filter:drop-shadow(0 1px .5px rgba(0,0,0,.14))}
+.bubble{background:#fff;border-radius:0 8px 8px 8px;padding:6px 8px;position:relative;font-size:14.2px;line-height:1.4}
+.bubble::before{content:"";position:absolute;left:-7px;top:0;border-top:9px solid #fff;border-left:8px solid transparent}
+.msg.with-btns .bubble{border-radius:0 8px 0 0}
+.b-head{font-weight:700;padding:2px 2px 4px}
+.b-media{margin:-2px -4px 6px;border-radius:6px;overflow:hidden;background:#d9dfdc;aspect-ratio:1.91/1;display:grid;place-items:center;color:#6f7a75;font-size:12px;font-weight:700;letter-spacing:.04em}
+.b-media.video{background:#2b3431;color:#e6ece9}
+.b-media img,.b-media video{width:100%;height:100%;object-fit:cover;display:block}
+.b-doc{display:flex;gap:10px;align-items:center;background:#f1f4f2;border-radius:6px;padding:10px;margin:0 -2px 6px;font-size:13px}
+.b-doc .ext{background:#e05b4b;color:#fff;font-size:10px;font-weight:800;padding:6px 5px;border-radius:4px}
+.b-body{padding:0 2px;overflow-wrap:anywhere}
+.b-foot{color:#8a9490;font-size:12.8px;padding:4px 2px 0}
+.b-time{text-align:right;font-size:11px;color:#8a9490;margin-top:1px}
+.b-btns{background:#fff;border-radius:0 0 8px 8px;border-top:1px solid #e8ecea}
+.b-btn{padding:9px;text-align:center;color:var(--wa-link);font-weight:500;border-top:1px solid #edf0ee;font-size:14px}
+.b-btn:first-child{border-top:0}
+.wa-var{background:#e2f2ec;color:#0b6a5c;border-radius:4px;padding:0 3px}
+.wa-var.empty{background:#fff1d1;color:#8a5a00;font-family:var(--mono);font-size:12px}
+.wa-quote{display:inline-block;border-left:3px solid #c5cec9;padding-left:8px;color:#55605b}
+.wa-mono,.b-body code{font-family:var(--mono);font-size:12.5px}
+.b-body code:not(.wa-mono){background:#eff2f0;padding:0 3px;border-radius:3px}
+.ph{color:#9aa39f}
+
+/* checks + submit */
+#checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+#checks li{display:flex;gap:8px;font-size:13px;align-items:flex-start}
+#checks li i{font-style:normal;flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;margin-top:1px}
+#checks .error i{background:var(--bad-soft);color:var(--bad)}
+#checks .warn i{background:var(--warn-soft);color:var(--warn)}
+#checks .ok i{background:var(--ok-soft);color:var(--ok)}
+.summary-pill{font-size:12px;font-weight:600}
+.result{margin-top:12px;font-size:13px;border-radius:8px;padding:10px 12px}
+.result.ok{background:var(--ok-soft);color:#0f5a36}
+.result.bad{background:var(--bad-soft);color:#842222}
+.result details{margin-top:6px}
+.result summary{cursor:pointer;font-weight:600}
+details > summary{cursor:pointer}
+.json summary{font-weight:650}
+pre{font-family:var(--mono);font-size:12px;line-height:1.5;background:#101816;color:#d6e5df;border-radius:8px;padding:12px;overflow:auto;max-height:420px;margin:10px 0 0;white-space:pre}
+
+/* library */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.t-name{font-weight:650;font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
+.t-sub{font-size:11.5px;color:var(--muted)}
+.t-reason{font-size:12px;color:var(--bad);margin-top:4px;max-width:280px}
+.t-actions{white-space:nowrap;text-align:right}
+.t-actions .btn{margin-left:4px}
+#libSearch{width:200px}
+#libStatus,#libScope{width:auto}
+.badge{display:inline-block;font-size:11px;font-weight:750;letter-spacing:.03em;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.badge.APPROVED{background:var(--ok-soft);color:var(--ok)}
+.badge.PENDING,.badge.IN_APPEAL,.badge.PENDING_DELETION{background:var(--warn-soft);color:var(--warn)}
+.badge.REJECTED,.badge.SUBMIT_FAILED,.badge.DISABLED{background:var(--bad-soft);color:var(--bad)}
+.badge.PAUSED,.badge.FLAGGED{background:#ece6fb;color:#5a3fb0}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* webhook + settings */
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:start}
+@media (max-width:900px){.two-col{grid-template-columns:1fr}}
+.steps{padding-left:20px;margin:12px 0 6px}
+.steps li{margin-bottom:14px}
+.steps input{margin-top:6px}
+pre.cmd{margin:6px 0 4px;padding:8px 10px;max-height:none}
+.copy-line{display:flex;gap:8px;align-items:center;margin-top:6px}
+.copy-line code{flex:1;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:7px 9px;overflow-wrap:anywhere;min-width:0}
+.ev{border-top:1px solid var(--line);padding:9px 0}
+.ev:first-child{border-top:0}
+.ev summary{display:flex;flex-wrap:wrap;gap:10px;align-items:center;list-style:none}
+.ev summary::-webkit-details-marker{display:none}
+.ev-time{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.ev-type{font-weight:650;font-size:13px}
+.tag{font-size:11px;background:#e8ecfb;color:#3b4db0;padding:1px 6px;border-radius:4px;font-weight:600}
+.ev-up{font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.muted{color:var(--muted)}
+.settings-form h2{margin-bottom:6px}
+.settings-form details{margin:4px 0 6px}
+.settings-form summary{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.btn.danger{color:var(--bad)}
+.btn.danger:hover{border-color:#e7b4b4;background:var(--bad-soft)}
+
+/* account profiles */
+.acct-switch{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.acct-switch select{width:auto;max-width:220px;padding:5px 8px;font-size:13px;font-weight:600;color:var(--ink)}
+.profiles{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.profile{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff}
+.profile.on{border-color:var(--accent);background:var(--accent-soft)}
+.profile .p-dot{flex:none;width:8px;height:8px;border-radius:50%;background:#e09b12}
+.profile .p-dot.ready{background:var(--ok)}
+.profile .p-main{flex:1;min-width:0}
+.profile .p-name{font-weight:650;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile .p-sub{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile .p-active{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.add-profile{display:flex;gap:8px;margin-top:12px}
+.add-profile input{flex:1;min-width:0}
+.submit-target{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.submit-target b{color:var(--ink)}
+
+/* carousel editor */
+.layout-box{border:1px solid var(--line);border-radius:9px;padding:10px 12px 0;background:var(--soft);margin-bottom:12px}
+.layout-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 10px;margin-top:6px}
+@media (max-width:640px){.layout-row{grid-template-columns:1fr}}
+.card-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.ctab{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:4px 10px 4px 4px;cursor:pointer;font-weight:600;font-size:13px}
+.ctab:hover{border-color:#c6ccc5}
+.ctab.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.ctab-thumb{width:28px;height:28px;border-radius:6px;background:#dde3df center/cover no-repeat;display:grid;place-items:center;font-size:11px;color:#6f7a75}
+.ctab .st{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.ctab .st.bad{background:var(--bad)}
+.card-ed{border:1px solid var(--line);border-radius:10px;padding:12px}
+.card-ed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.card-ed-grid{display:grid;grid-template-columns:190px minmax(0,1fr);gap:14px}
+@media (max-width:640px){.card-ed-grid{grid-template-columns:1fr}}
+.card-ed textarea{min-height:92px;border-radius:0 0 9px 9px}
+.card-ed .samples{margin-top:8px}
+.card-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:12px}
+.card-btn{border:1px solid var(--line);border-radius:9px;padding:10px 12px 2px;background:var(--soft)}
+@media (max-width:640px){.card-btns{grid-template-columns:1fr}}
+.drop.thumb{padding:0;aspect-ratio:1.91/1;display:grid;place-items:center;overflow:hidden;margin-bottom:6px;font-size:12.5px;line-height:1.35}
+.drop.thumb img,.drop.thumb video{width:100%;height:100%;object-fit:cover;display:block}
+#drop.thumb{max-width:340px}
+.icon-btn:disabled{opacity:.35;cursor:default;background:none}
+/* carousel preview */
+.cards-row{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 6px;margin-top:6px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.c-card{flex:none;width:224px;background:#fff;border-radius:10px;overflow:hidden;scroll-snap-align:start;cursor:pointer;box-shadow:0 1px .5px rgba(0,0,0,.14);outline:2px solid transparent;outline-offset:-2px}
+.c-card.on{outline-color:rgba(11,122,107,.5)}
+.c-card .b-media{margin:0;border-radius:0}
+.c-body{padding:8px 10px;font-size:13.5px;line-height:1.4;min-height:44px;overflow-wrap:anywhere}
+.c-card .b-btns{border-radius:0}
+.c-card .b-btn{font-size:13.5px;padding:8px}
+
+/* toasts + dialog */
+#toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:60}
+.toast{background:#17201c;color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:380px;transition:opacity .3s,transform .3s}
+.toast.ok{background:#14532d} .toast.bad{background:#7f1d1d} .toast.warn{background:#6f4600}
+.toast.out{opacity:0;transform:translateY(6px)}
+dialog{border:0;border-radius:12px;padding:0;max-width:min(780px,94vw);width:100%;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+dialog::backdrop{background:rgba(15,23,21,.45)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+dialog pre{margin:0;border-radius:0;max-height:72vh}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C8.8 3 3 8.4 3 15c0 2.6.9 5 2.4 6.9L4 29l7.5-2.6c1.4.4 2.9.6 4.5.6 7.2 0 13-5.4 13-12S23.2 3 16 3z" fill="#0b7a6b"/><path d="M10 12h12M10 17h8" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <div><b>WABA Template Studio</b><small id="wabaLabel">Exotel · not connected</small></div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="compose">Compose</button>
+    <button class="tab-btn" data-tab="library">Templates <span class="count" id="libCount">0</span></button>
+    <button class="tab-btn" data-tab="webhook">Webhook</button>
+    <button class="tab-btn" data-tab="settings">Settings <span class="dot-warn" id="setupDot" hidden></span></button>
+  </nav>
+  <label class="acct-switch" title="The Exotel account templates are submitted to, synced from and uploaded with">Account
+    <select id="profileSwitch" aria-label="Exotel account"></select></label>
+  <div class="live" id="live" title="Live link to the local server — status updates arrive here instantly"><span class="dot"></span><span id="liveText">Connecting…</span></div>
+</header>
+
+<main>
+<!-- ═════════════ COMPOSE ═════════════ -->
+<section class="tab" id="tab-compose">
+  <div class="banner" id="setupBanner" hidden>Add your Exotel API key, token, Account SID and WABA ID in <a href="#" data-goto="settings">Settings</a> before submitting. You can still write and preview templates.</div>
+  <div class="compose">
+    <div class="editor">
+
+      <div class="card">
+        <div class="card-head"><h2>What do you want to send?</h2><span class="hint">Pick one — it fills in an example you can edit.</span></div>
+        <div class="kinds" id="kinds">
+          <button type="button" data-kind="TEXT"><span class="k-ic">💬</span><b>Text</b><small>Message, optional buttons</small></button>
+          <button type="button" data-kind="IMAGE"><span class="k-ic">🖼️</span><b>Image + text</b><small>Photo above the message</small></button>
+          <button type="button" data-kind="VIDEO"><span class="k-ic">🎬</span><b>Video + text</b><small>MP4 above the message</small></button>
+          <button type="button" data-kind="DOCUMENT"><span class="k-ic">📄</span><b>PDF + text</b><small>Brochure, invoice, receipt</small></button>
+          <button type="button" data-kind="CAROUSEL"><span class="k-ic">🎠</span><b>Carousel</b><small>2–10 swipeable cards</small></button>
+          <button type="button" data-kind="OTP"><span class="k-ic">🔑</span><b>OTP code</b><small>Login / verification</small></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Template basics</h2><button class="btn sm" id="newBtn" type="button">New template</button></div>
+        <div class="grid-name">
+          <label class="field">
+            <span class="lbl">Template name</span>
+            <input id="f-name" autocomplete="off" spellcheck="false" placeholder="project_launch_update">
+            <span class="hint">Lowercase letters, numbers and _ only — spaces turn into _ as you type.</span>
+          </label>
+          <label class="field">
+            <span class="lbl">Language</span>
+            <select id="f-language"></select>
+          </label>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <span class="lbl">Category</span>
+          <div class="seg" id="f-category">
+            <button type="button" data-v="MARKETING">Marketing<small>Launches, offers, re-engagement</small></button>
+            <button type="button" data-v="UTILITY">Utility<small>Updates on something they asked for</small></button>
+            <button type="button" data-v="AUTHENTICATION">Authentication<small>OTP / verification codes</small></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-mode="standard">
+        <div class="card-head"><h2>Header <span class="opt">optional</span></h2></div>
+        <div class="seg small" id="f-headerType">
+          <button type="button" data-v="NONE">None</button>
+          <button type="button" data-v="TEXT">Text</button>
+          <button type="button" data-v="IMAGE">Image</button>
+          <button type="button" data-v="VIDEO">Video</button>
+          <button type="button" data-v="DOCUMENT">Document</button>
+        </div>
+        <div id="hdr-text" hidden>
+          <div class="input-row">
+            <input id="f-headerText" placeholder="New launch in {{1}}" autocomplete="off">
+            <button class="btn sm" id="hdrVarBtn" type="button">+ Variable</button>
+          </div>
+          <div class="meta-row"><span class="hint">Plain text only — no emojis or formatting. One variable max.</span><span class="counter" id="c-header">0/60</span></div>
+          <label class="field" id="hdr-sample-wrap" style="margin-top:10px" hidden>
+            <span class="lbl">Sample value for {{1}}</span>
+            <input id="f-headerSample" placeholder="Whitefield">
+          </label>
+        </div>
+        <div id="hdr-media" hidden>
+          <div class="drop" id="drop" tabindex="0" role="button">
+            <b>Choose a sample file</b> or drop it here<br><small class="hint" id="mediaRules">JPG or PNG, up to 5 MB</small>
+          </div>
+          <input type="file" id="f-file" hidden>
+          <div class="media-status" id="mediaStatus"></div>
+          <label class="field" style="margin-bottom:0">
+            <span class="lbl">Media handle</span>
+            <input id="f-headerHandle" placeholder="Filled automatically after upload — or paste one" autocomplete="off" spellcheck="false">
+            <span class="hint">Meta looks at this sample while reviewing. When you send the real message you can use a different file.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card" data-mode="standard carousel">
+        <div class="card-head"><h2 id="bodyTitle">Message body</h2><span class="counter" id="c-body">0/1024</span></div>
+        <div class="toolbar" id="toolbar">
+          <button type="button" data-fmt="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button type="button" data-fmt="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+          <button type="button" data-fmt="strike" title="Strikethrough"><s>S</s></button>
+          <button type="button" data-fmt="code" title="Inline code"><code>`c`</code></button>
+          <button type="button" data-fmt="mono" title="Monospace block"><code>```</code></button>
+          <span class="sep"></span>
+          <button type="button" data-fmt="bullet" title="Bulleted list">• List</button>
+          <button type="button" data-fmt="number" title="Numbered list">1. List</button>
+          <button type="button" data-fmt="quote" title="Quote">❝ Quote</button>
+          <span class="sep"></span>
+          <button type="button" data-fmt="emoji" title="Emoji">😊</button>
+          <button type="button" data-fmt="var" class="push accent" title="Insert the next variable">+ Variable</button>
+        </div>
+        <div class="emoji-pop" id="emojiPop" hidden></div>
+        <textarea id="f-body" placeholder="Hi {{1}}, bookings for {{2}} open this Saturday. Reply YES to get the brochure."></textarea>
+        <div class="hint" style="margin-top:6px">WhatsApp saves formatting as symbols — <code>*bold*</code> <code>_italic_</code> <code>~strike~</code>. The phone on the right shows what customers see.</div>
+        <div id="samples" class="samples"></div>
+      </div>
+
+      <div class="card" data-mode="standard">
+        <div class="card-head"><h2>Footer <span class="opt">optional</span></h2><span class="counter" id="c-footer">0/60</span></div>
+        <input id="f-footer" placeholder="Reply STOP to opt out">
+      </div>
+
+      <div class="card" data-mode="standard">
+        <div class="card-head">
+          <h2>Buttons <span class="opt">optional · up to 10</span></h2>
+          <div class="add-btns">
+            <button class="btn sm" type="button" data-add="QUICK_REPLY">+ Quick reply</button>
+            <button class="btn sm" type="button" data-add="URL">+ Website</button>
+            <button class="btn sm" type="button" data-add="PHONE_NUMBER">+ Call</button>
+            <button class="btn sm" type="button" data-add="COPY_CODE">+ Copy code</button>
+          </div>
+        </div>
+        <div id="buttonsList" class="btn-list"></div>
+        <div class="hint" id="btnHint" style="margin-top:8px">Quick replies are always sent first, then the action buttons — Meta needs them grouped.</div>
+      </div>
+
+      <div class="card" id="card-carousel" data-mode="carousel" hidden>
+        <div class="card-head">
+          <h2>Carousel cards <span class="opt" id="cardCountLbl">2 of 10</span></h2>
+          <span class="head-actions">
+            <button class="btn sm" id="bulkCardsBtn" type="button" title="Pick several images or videos — one card is made for each">+ Cards from files…</button>
+            <button class="btn sm" id="addCardBtn" type="button">+ Add card</button>
+          </span>
+        </div>
+        <div class="layout-box">
+          <div class="lbl">Card layout <span class="opt">— the same on every card (Meta requires matching media and button types)</span></div>
+          <div class="layout-row">
+            <label class="field"><span class="lbl">Media on each card</span>
+              <select id="c-media"><option value="IMAGE">Image (JPG/PNG)</option><option value="VIDEO">Video (MP4)</option></select></label>
+            <label class="field"><span class="lbl">Button 1</span>
+              <select id="c-btn0"><option value="QUICK_REPLY">Quick reply</option><option value="URL">Website</option><option value="PHONE_NUMBER">Call</option></select></label>
+            <label class="field"><span class="lbl">Button 2</span>
+              <select id="c-btn1"><option value="">None</option><option value="QUICK_REPLY">Quick reply</option><option value="URL">Website</option><option value="PHONE_NUMBER">Call</option></select></label>
+          </div>
+        </div>
+        <div class="card-tabs" id="cardTabs"></div>
+        <div id="cardEditor"></div>
+        <input type="file" id="c-file" hidden>
+        <input type="file" id="c-files" multiple hidden>
+        <div class="hint" style="margin-top:8px">Tip: select or drop several files at once to make one card per file. WhatsApp crops card media to a wide frame (about 1.91 : 1). Keep key details in the middle.</div>
+      </div>
+
+      <div class="card" id="card-auth" data-mode="auth" hidden>
+        <div class="card-head"><h2>Authentication settings</h2></div>
+        <p class="hint" style="margin-top:0">Meta writes the text for you (“<b>123456</b> is your verification code.”). You only pick the extras.</p>
+        <label class="check"><input type="checkbox" id="a-security"> Add “For your security, do not share this code.”</label>
+        <div class="grid2">
+          <label class="field"><span class="lbl">Code expires in (minutes)</span><input type="number" id="a-expiry" min="1" max="90" placeholder="10"></label>
+          <label class="field"><span class="lbl">Button type</span>
+            <select id="a-otpType"><option value="COPY_CODE">Copy code</option><option value="ONE_TAP">One-tap autofill (Android app)</option></select>
+          </label>
+          <label class="field"><span class="lbl">Button label <span class="opt">optional</span></span><input id="a-buttonText" placeholder="Copy code"></label>
+          <label class="field"><span class="lbl">Message expiry (seconds) <span class="opt">optional</span></span><input type="number" id="a-ttl" min="30" max="900" placeholder="600"></label>
+        </div>
+        <div class="grid2" id="a-onetap" hidden>
+          <label class="field"><span class="lbl">Android package name</span><input id="a-package" placeholder="com.company.app"></label>
+          <label class="field"><span class="lbl">App signing key hash</span><input id="a-hash" placeholder="11 characters"></label>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="phone">
+        <div class="phone-top"><span class="avatar">B</span><div><b>Your Business</b><small>Template preview</small></div></div>
+        <div class="chat"><div id="preview"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head" style="margin-bottom:10px"><h2>Checks</h2><span class="summary-pill" id="checkSummary"></span></div>
+        <ul id="checks"></ul>
+      </div>
+      <div class="card">
+        <button class="btn primary block" id="submitBtn" type="button">Submit to Exotel for approval</button>
+        <div class="submit-target" id="submitTarget"></div>
+        <div class="row-btns">
+          <button class="btn sm" id="copyJsonBtn" type="button">Copy JSON</button>
+          <button class="btn sm" id="copyCurlBtn" type="button">Copy cURL</button>
+        </div>
+        <div id="submitResult"></div>
+      </div>
+      <details class="card json">
+        <summary>Request body sent to Exotel</summary>
+        <pre id="jsonOut"></pre>
+      </details>
+    </aside>
+  </div>
+</section>
+
+<!-- ═════════════ LIBRARY ═════════════ -->
+<section class="tab" id="tab-library" hidden>
+  <div class="card">
+    <div class="card-head">
+      <h2>Templates</h2>
+      <div class="head-actions">
+        <input id="libSearch" type="search" placeholder="Search by name…">
+        <select id="libScope" aria-label="Which account's templates">
+          <option value="active">This account</option>
+          <option value="all">All accounts</option>
+        </select>
+        <select id="libStatus">
+          <option value="">All statuses</option>
+          <option>APPROVED</option><option>PENDING</option><option>REJECTED</option>
+          <option>PAUSED</option><option>DISABLED</option><option>SUBMIT_FAILED</option>
+        </select>
+        <button class="btn primary sm" id="syncBtn" type="button">Sync from Exotel</button>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:-4px">Statuses change live when the webhook fires. <b>Sync</b> pulls every template on the selected account's WABA — handy if a webhook was missed or you created templates elsewhere.</p>
+    <div class="table-wrap">
+      <table id="libTable">
+        <thead><tr><th>Name</th><th>Lang</th><th>Category</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="empty" id="libEmpty">No templates yet. Submit one from Compose, or press Sync.</div>
+  </div>
+</section>
+
+<!-- ═════════════ WEBHOOK ═════════════ -->
+<section class="tab" id="tab-webhook" hidden>
+  <div class="banner"><b>You probably don't need this.</b> While a template is pending, the app checks Exotel for its status every few minutes, so approvals and rejections show up without a webhook.<br>
+    <b>Before you change anything in Exotel:</b> Exotel's WhatsApp webhook is <b>one address for the whole account</b>. Incoming customer messages and delivery reports go there too. If your CRM or another system already uses it, pointing it at this laptop takes those messages away from that system. Check with whoever owns the Exotel account first, and ask Exotel support whether they send template-approval events at all. Their public docs don't say they do.</div>
+  <div class="two-col">
+    <div class="card">
+      <h2>Connect Exotel to this app</h2>
+      <ol class="steps">
+        <li>Keep this app running. The webhook listens on port <b class="whp">3001</b> of this computer.</li>
+        <li>Open a public tunnel to that port (Exotel needs an https address it can reach):
+          <pre class="cmd">ngrok http <span class="whp">3001</span></pre>
+          <span class="hint">or <code>cloudflared tunnel --url http://localhost:<span class="whp">3001</span></code></span></li>
+        <li>Paste the tunnel's https address:
+          <input id="tunnelBase" placeholder="https://abcd-1234.ngrok-free.app" spellcheck="false"></li>
+        <li>Put this URL in <b>Exotel Dashboard → WhatsApp → Settings → Webhooks</b>:
+          <div class="copy-line"><code id="whFull">…</code><button class="btn sm" id="copyWh" type="button">Copy</button></div></li>
+      </ol>
+      <p class="hint" style="margin:0">The random part of the URL acts like a password, so strangers can't post fake updates. Regenerate it in Settings if it leaks.</p>
+    </div>
+    <div class="card">
+      <h2>Test without Exotel</h2>
+      <p class="hint">Sends a fake “template status changed” event through the same code the real webhook uses — good for checking the flow before Meta replies.</p>
+      <label class="field"><span class="lbl">Template</span><select id="simTemplate"></select></label>
+      <div class="grid2">
+        <label class="field"><span class="lbl">New status</span>
+          <select id="simStatus"><option>APPROVED</option><option>REJECTED</option><option>PAUSED</option><option>DISABLED</option></select></label>
+        <label class="field"><span class="lbl">Reason <span class="opt">if rejected</span></span><input id="simReason" placeholder="INVALID_FORMAT"></label>
+      </div>
+      <button class="btn primary sm" id="simBtn" type="button">Send test event</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>Received events</h2><span class="hint">Newest first · every raw payload is also saved to data/webhooks.jsonl</span></div>
+    <div id="whList"></div>
+    <div class="empty" id="whEmpty">No events yet.</div>
+  </div>
+</section>
+
+<!-- ═════════════ SETTINGS ═════════════ -->
+<section class="tab" id="tab-settings" hidden>
+  <div class="two-col">
+    <form class="card settings-form" id="settingsForm" autocomplete="off">
+      <h2>Exotel account</h2>
+      <p class="hint" style="margin-top:0">Credentials for the selected account, from <b>my.exotel.com → API Settings</b>. Saved only on this computer (<code>data/config.json</code>); tokens never go back to the browser.</p>
+      <label class="field"><span class="lbl">Account name</span><input name="name" maxlength="60" placeholder="e.g. Main brand" spellcheck="false"></label>
+      <div class="grid2">
+        <label class="field"><span class="lbl">API key</span><input name="apiKey" spellcheck="false"></label>
+        <label class="field"><span class="lbl">API token</span><input name="apiToken" type="password" autocomplete="new-password" placeholder="Paste token"></label>
+        <label class="field"><span class="lbl">Account SID</span><input name="accountSid" spellcheck="false"></label>
+        <label class="field"><span class="lbl">WABA ID</span><input name="wabaId" placeholder="WhatsApp Business Account ID" spellcheck="false"></label>
+      </div>
+      <label class="field"><span class="lbl">Region</span>
+        <select name="region">
+          <option value="in">India — Mumbai (api.in.exotel.com)</option>
+          <option value="sg">Singapore (api.exotel.com)</option>
+        </select></label>
+      <details>
+        <summary>Advanced</summary>
+        <label class="field"><span class="lbl">API base URL override</span><input name="baseUrlOverride" placeholder="Leave empty — only for testing against a mock server" spellcheck="false"></label>
+      </details>
+      <div class="row-btns">
+        <button class="btn primary" type="submit">Save</button>
+        <button class="btn" type="button" id="testBtn">Save &amp; test connection</button>
+        <button class="btn danger" type="button" id="deleteProfileBtn" style="margin-left:auto">Delete account</button>
+      </div>
+      <div id="settingsResult"></div>
+    </form>
+    <div class="stack">
+      <div class="card">
+        <h2>Accounts</h2>
+        <p class="hint" style="margin:4px 0 0">Save each Exotel account once, then switch here or from the top bar. Submitting, syncing and media uploads use the selected account.</p>
+        <ul class="profiles" id="profileList"></ul>
+        <form class="add-profile" id="addProfileForm" autocomplete="off">
+          <input name="name" maxlength="60" placeholder="New account name" spellcheck="false" aria-label="New account name">
+          <button class="btn sm" type="submit">Add account</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Webhook secret</h2>
+        <p class="hint">The private part of your webhook URL, shared by all accounts. Regenerating it stops the old URL from working — update Exotel right after.</p>
+        <div class="copy-line"><code id="secretPath">…</code></div>
+        <div class="row-btns"><button class="btn sm" id="regenBtn" type="button">Regenerate secret</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div id="toasts" aria-live="polite"></div>
+<dialog id="dlg">
+  <div class="dlg-head"><b id="dlgTitle">Details</b><button class="icon-btn" id="dlgClose" type="button" aria-label="Close">✕</button></div>
+  <pre id="dlgBody"></pre>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+
+// ───────────── helpers ─────────────
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const VAR_RE = /\{\{\s*(\d+)\s*\}\}/g;
+const varsIn = t => [...new Set([...String(t || '').matchAll(VAR_RE)].map(m => Number(m[1])))].sort((a, b) => a - b);
+const varCount = t => [...String(t || '').matchAll(VAR_RE)].length;
+const EMOJI_RE = /\p{Extended_Pictographic}/u;
+const cap = s => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase() : '');
+
+const LIMIT = { header: 60, body: 1024, footer: 60, btnText: 25, copy: 15, buttons: 10, cardBody: 160, cards: 10 };
+const MEDIA = {
+  IMAGE: { accept: 'image/jpeg,image/png', types: ['image/jpeg', 'image/png'], maxMB: 5, label: 'JPG or PNG, up to 5 MB' },
+  VIDEO: { accept: 'video/mp4', types: ['video/mp4'], maxMB: 16, label: 'MP4, up to 16 MB' },
+  DOCUMENT: { accept: 'application/pdf', types: ['application/pdf'], maxMB: 100, label: 'PDF, up to 100 MB' },
+};
+const LANGS = [['en', 'English'], ['en_US', 'English (US)'], ['en_GB', 'English (UK)'], ['hi', 'Hindi'], ['mr', 'Marathi'],
+  ['kn', 'Kannada'], ['te', 'Telugu'], ['ta', 'Tamil'], ['gu', 'Gujarati'], ['bn', 'Bengali'], ['ml', 'Malayalam'],
+  ['pa', 'Punjabi'], ['ur', 'Urdu'], ['ar', 'Arabic']];
+const EMOJIS = '😊 🙏 👋 🎉 ✨ 🔥 ✅ ❌ ⏰ 📅 📍 📞 📩 🏠 🏢 🔑 💰 📈 🎁 🚀 👉 ⭐ 👍 ❤️'.split(' ');
+const SAMPLE_HINTS = ['Rahul', 'Skyline Towers', 'Whitefield', '25 Oct', '11:00 AM', '₹1.2 Cr'];
+// Example content filled in when you pick a type on an empty draft
+const STARTERS = {
+  TEXT: {
+    body: 'Hi {{1}}, thanks for your interest in *{{2}}*. Our team will call you today to plan your site visit.\n\nReply YES to get the brochure on WhatsApp.',
+    samples: { 1: 'Rahul', 2: 'Skyline Towers' }, buttons: [{ type: 'QUICK_REPLY', text: 'Yes, send brochure' }],
+  },
+  IMAGE: {
+    body: 'Hi {{1}}, bookings for *{{2}}* open on {{3}}. Limited units are available at launch prices.',
+    samples: { 1: 'Rahul', 2: 'Skyline Towers', 3: '25 Oct' }, buttons: [{ type: 'QUICK_REPLY', text: 'I am interested' }],
+  },
+  VIDEO: {
+    body: 'Hi {{1}}, take a one-minute video tour of *{{2}}* before you visit. Reply YES and we will book a site visit for you.',
+    samples: { 1: 'Rahul', 2: 'Skyline Towers' }, buttons: [{ type: 'QUICK_REPLY', text: 'Book a site visit' }],
+  },
+  DOCUMENT: {
+    body: 'Hi {{1}}, here is the brochure for *{{2}}* that you asked for. Call us if you have any questions.',
+    samples: { 1: 'Rahul', 2: 'Skyline Towers' }, buttons: [],
+  },
+  CAROUSEL: {
+    body: 'Hi {{1}}, swipe to see the homes available at *{{2}}*.',
+    samples: { 1: 'Rahul', 2: 'Skyline Towers' },
+    cards: [['2 BHK homes from {{1}} onwards', '₹85 L'], ['3 BHK homes from {{1}} onwards', '₹1.2 Cr']],
+    cardButton: 'I am interested',
+  },
+};
+const BTN_META = {
+  QUICK_REPLY: { label: 'Quick reply', icon: '↩', text: 'Yes, interested' },
+  URL: { label: 'Visit website', icon: '↗', text: 'View brochure' },
+  PHONE_NUMBER: { label: 'Call phone number', icon: '✆', text: 'Call us' },
+  COPY_CODE: { label: 'Copy offer code', icon: '⧉', text: 'Copy offer code' },
+};
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
+};
+
+async function api(path, opts = {}) {
+  const init = { method: opts.method || 'GET', headers: { ...(opts.headers || {}) } };
+  if (opts.json !== undefined) { init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(opts.json); }
+  else if (opts.body !== undefined) init.body = opts.body;
+  const res = await fetch(path, init);
+  let data = {};
+  try { data = await res.json(); } catch { /* empty */ }
+  if (!res.ok) { const e = new Error(data.error || `HTTP ${res.status}`); e.details = data.details; throw e; }
+  return data;
+}
+
+function toast(msg, kind = 'info', ms = 4200) {
+  const el = document.createElement('div');
+  el.className = `toast ${kind}`; el.textContent = msg;
+  $('#toasts').append(el);
+  setTimeout(() => el.classList.add('out'), ms);
+  setTimeout(() => el.remove(), ms + 400);
+}
+
+async function copyText(text, what = 'Copied') {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = Object.assign(document.createElement('textarea'), { value: text });
+    document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  toast(what, 'ok', 1800);
+}
+
+function ago(iso) {
+  if (!iso) return '—';
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 60) return 'just now';
+  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
+  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+const badge = st => `<span class="badge ${esc(st || '')}">${esc((st || 'UNKNOWN').replace(/_/g, ' '))}</span>`;
+
+// ───────────── state ─────────────
+const blankCardBtn = () => ({ text: '', url: '', sample: '', phone: '' });
+const newCard = () => ({ id: Math.random().toString(36).slice(2, 10), handle: '', fileName: '', body: '', samples: {}, buttons: [blankCardBtn(), blankCardBtn()] });
+const blank = () => ({
+  name: '', category: 'MARKETING', language: 'en', format: 'STANDARD',
+  carousel: { media: 'IMAGE', buttonTypes: ['QUICK_REPLY', 'URL'], cards: [newCard(), newCard()], active: 0 },
+  headerType: 'NONE', headerText: '', headerSample: '', headerHandle: '', headerFileName: '',
+  body: '', samples: {}, footer: '', buttons: [],
+  auth: { security: true, expiry: '10', otpType: 'COPY_CODE', buttonText: '', packageName: '', signatureHash: '', ttl: '' },
+});
+let state = blank();
+let headerPreviewUrl = '';
+const cardPreview = new Map(); // card id → local preview URL of the chosen image/video
+const pendingFiles = new Map(); // 'header' or card id → file picked but not uploaded to Exotel yet
+const inflight = new Map();     // same keys → { file, p } for uploads in progress
+const uploaded = new Map();     // same keys → { file, handle, profileId } for samples uploaded from this window
+const mode = () => state.category === 'AUTHENTICATION' ? 'auth' : state.format === 'CAROUSEL' ? 'carousel' : 'standard';
+const currentKind = () => mode() === 'auth' ? 'OTP' : mode() === 'carousel' ? 'CAROUSEL' : MEDIA[state.headerType] ? state.headerType : 'TEXT';
+const activeCard = () => state.carousel.cards[state.carousel.active];
+function clearCardPreviews() { for (const u of new Set(cardPreview.values())) URL.revokeObjectURL(u); cardPreview.clear(); }
+let config = {};
+let registry = [];
+let webhookEvents = [];
+
+// ───────────── tabs ─────────────
+function showTab(name) {
+  if (!$(`#tab-${name}`)) name = 'compose';
+  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  $$('.tab').forEach(t => { t.hidden = t.id !== `tab-${name}`; });
+  store.set('waba-tab', name);
+}
+
+// ───────────── rich-text editing helpers ─────────────
+function afterEdit(el) { el.focus(); el.dispatchEvent(new Event('input', { bubbles: true })); }
+
+function wrapSelection(ta, mark) {
+  let { selectionStart: s, selectionEnd: e } = ta;
+  const sel = ta.value.slice(s, e);
+  const has = sel.trim().length > 0;
+  if (!has) { s = e; }
+  const lead = has ? sel.match(/^\s*/)[0] : '';
+  const trail = has ? sel.match(/\s*$/)[0] : '';
+  const core = has ? sel.trim() : 'text';
+  // Toggle off if the selection is already wrapped in this mark
+  if (has && core.length > mark.length * 2 && core.startsWith(mark) && core.endsWith(mark)) {
+    ta.setRangeText(lead + core.slice(mark.length, -mark.length) + trail, s, e, 'select');
+    return afterEdit(ta);
+  }
+  // WhatsApp ignores "* text *", so spaces stay outside the markers
+  ta.setRangeText(lead + mark + core + mark + trail, s, e, 'end');
+  if (!has) ta.setSelectionRange(s + mark.length, s + mark.length + core.length);
+  afterEdit(ta);
+}
+
+function prefixLines(ta, re, makePrefix) {
+  const v = ta.value;
+  const s = v.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+  let e = v.indexOf('\n', ta.selectionEnd); if (e === -1) e = v.length;
+  const lines = v.slice(s, e).split('\n');
+  if (lines.length === 1 && !lines[0].trim()) {
+    ta.setRangeText(makePrefix(0), s, e, 'end');
+    return afterEdit(ta);
+  }
+  const filled = lines.filter(l => l.trim());
+  const allHave = filled.every(l => re.test(l));
+  let n = 0;
+  const out = lines.map(l => {
+    if (!l.trim()) return l;
+    const base = l.replace(/^([-*] |\d+\. |> )/, '');
+    return allHave ? base : makePrefix(n++) + base;
+  });
+  ta.setRangeText(out.join('\n'), s, e, 'select');
+  afterEdit(ta);
+}
+
+function insertAtCursor(el, text) {
+  el.setRangeText(text, el.selectionStart, el.selectionEnd, 'end');
+  afterEdit(el);
+}
+const nextVar = text => { const v = varsIn(text); return v.length ? Math.max(...v) + 1 : 1; };
+
+function onToolbar(fmt) {
+  const ta = $('#f-body');
+  if (fmt !== 'emoji') $('#emojiPop').hidden = true;
+  switch (fmt) {
+    case 'bold': return wrapSelection(ta, '*');
+    case 'italic': return wrapSelection(ta, '_');
+    case 'strike': return wrapSelection(ta, '~');
+    case 'code': return wrapSelection(ta, '`');
+    case 'mono': return wrapSelection(ta, '```');
+    case 'bullet': return prefixLines(ta, /^[-*] /, () => '- ');
+    case 'number': return prefixLines(ta, /^\d+\. /, i => `${i + 1}. `);
+    case 'quote': return prefixLines(ta, /^> /, () => '> ');
+    case 'var': return insertAtCursor(ta, `{{${nextVar(ta.value)}}}`);
+    case 'emoji': $('#emojiPop').hidden = !$('#emojiPop').hidden; return;
+  }
+}
+
+/** Turn WhatsApp markup into HTML for the preview */
+function waFormat(text, samples) {
+  let html = esc(text);
+  const blocks = [];
+  html = html.replace(/```([\s\S]+?)```/g, (_, m) => { blocks.push(m); return `\u0000${blocks.length - 1}\u0000`; });
+  html = html.split('\n').map(line => {
+    if (line.startsWith('&gt; ')) return `<span class="wa-quote">${line.slice(5)}</span>`;
+    if (/^[-*] /.test(line)) return `•&nbsp;${line.slice(2)}`;
+    return line;
+  }).join('\n');
+  html = html
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    .replace(/\*([^*\n]+)\*/g, '<b>$1</b>')
+    .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, '$1<i>$2</i>')
+    .replace(/~([^~\n]+)~/g, '<s>$1</s>')
+    .replace(/\u0000(\d+)\u0000/g, (_, i) => `<code class="wa-mono">${blocks[i]}</code>`)
+    .replace(/\n/g, '<br>');
+  return fillVars(html, samples);
+}
+function fillVars(html, samples) {
+  return html.replace(VAR_RE, (m, n) => {
+    const v = String(samples?.[n] ?? '').trim();
+    return v ? `<span class="wa-var">${esc(v)}</span>` : `<span class="wa-var empty">{{${n}}}</span>`;
+  });
+}
+
+// ───────────── payload builder ─────────────
+const orderedButtons = () => [...state.buttons.filter(b => b.type === 'QUICK_REPLY'), ...state.buttons.filter(b => b.type !== 'QUICK_REPLY')];
+
+function buildButton(b) {
+  switch (b.type) {
+    case 'QUICK_REPLY': return { type: 'QUICK_REPLY', text: (b.text || '').trim() };
+    case 'URL': {
+      const url = (b.url || '').trim();
+      const o = { type: 'URL', text: (b.text || '').trim(), url };
+      if (varCount(url)) o.example = [url.replace(VAR_RE, (b.sample || '').trim())];
+      return o;
+    }
+    case 'PHONE_NUMBER': {
+      const p = (b.phone || '').replace(/[\s()-]/g, '');
+      return { type: 'PHONE_NUMBER', text: (b.text || '').trim(), phone_number: p };
+    }
+    case 'COPY_CODE': return { type: 'COPY_CODE', example: (b.example || '').trim() };
+  }
+}
+
+function buildTemplate() {
+  const s = state;
+  const t = { name: s.name, language: s.language, category: s.category, components: [] };
+  if (s.category === 'AUTHENTICATION') {
+    const a = s.auth;
+    t.components.push({ type: 'BODY', add_security_recommendation: Boolean(a.security) });
+    if (String(a.expiry).trim()) t.components.push({ type: 'FOOTER', code_expiration_minutes: Number(a.expiry) });
+    const btn = { type: 'OTP', otp_type: a.otpType };
+    if (a.buttonText.trim()) btn.text = a.buttonText.trim();
+    if (a.otpType === 'ONE_TAP') btn.supported_apps = [{ package_name: a.packageName.trim(), signature_hash: a.signatureHash.trim() }];
+    t.components.push({ type: 'BUTTONS', buttons: [btn] });
+    if (String(a.ttl).trim()) t.message_send_ttl_seconds = Number(a.ttl);
+    return t;
+  }
+  const bodyComponent = () => {
+    const body = { type: 'BODY', text: s.body.trim() };
+    const bv = varsIn(s.body);
+    if (bv.length) body.example = { body_text: [bv.map(n => String(s.samples[n] ?? '').trim())] };
+    return body;
+  };
+  if (mode() === 'carousel') {
+    const c = s.carousel;
+    t.components.push(bodyComponent());
+    t.components.push({
+      type: 'CAROUSEL',
+      cards: c.cards.map(card => {
+        const cb = { type: 'BODY', text: card.body.trim() };
+        const cv = varsIn(card.body);
+        if (cv.length) cb.example = { body_text: [cv.map(n => String(card.samples[n] ?? '').trim())] };
+        return { components: [
+          { type: 'HEADER', format: c.media, example: { header_handle: [card.handle.trim()] } },
+          cb,
+          { type: 'BUTTONS', buttons: c.buttonTypes.map((type, j) => buildButton({ type, ...card.buttons[j] })) },
+        ] };
+      }),
+    });
+    return t;
+  }
+  if (s.headerType === 'TEXT' && s.headerText.trim()) {
+    const h = { type: 'HEADER', format: 'TEXT', text: s.headerText.trim() };
+    if (varCount(s.headerText)) h.example = { header_text: [s.headerSample.trim()] };
+    t.components.push(h);
+  } else if (MEDIA[s.headerType]) {
+    t.components.push({ type: 'HEADER', format: s.headerType, example: { header_handle: [s.headerHandle.trim()] } });
+  }
+  t.components.push(bodyComponent());
+  if (s.footer.trim()) t.components.push({ type: 'FOOTER', text: s.footer.trim() });
+  if (s.buttons.length) t.components.push({ type: 'BUTTONS', buttons: orderedButtons().map(buildButton) });
+  return t;
+}
+const requestBody = () => ({ whatsapp: { templates: [{ template: buildTemplate() }] } });
+
+// ───────────── validation (mirrors Meta's common rejection rules) ─────────────
+function checkText(text, samples, label, err, warn, max, edges = 'error') {
+  if (!text.trim()) err(`${label}: text is required.`);
+  if (text.length > max) err(`${label} is ${text.length}/${max} characters.`);
+  const v = varsIn(text);
+  if (v.some((x, i) => x !== i + 1)) err(`${label}: variables must count up from {{1}} with no gaps — found ${v.map(x => `{{${x}}}`).join(', ')}.`);
+  if (/^\s*\{\{\s*\d+\s*\}\}/.test(text) || /\{\{\s*\d+\s*\}\}\s*$/.test(text)) {
+    (edges === 'error' ? err : warn)(`${label} can’t start or end with a variable — add words before/after it.`);
+  }
+  const missing = v.filter(x => !String(samples[x] ?? '').trim());
+  if (missing.length) err(`${label}: add sample values for ${missing.map(x => `{{${x}}}`).join(', ')}.`);
+  if (/\}\}\s*\{\{/.test(text)) warn(`${label}: two variables sit side by side — Meta often rejects this. Put words between them.`);
+  const words = text.replace(VAR_RE, ' ').trim().split(/\s+/).filter(Boolean).length;
+  if (v.length && words < v.length * 3) warn(`${label}: many variables for a short text — Meta may reject it. Add more fixed words.`);
+}
+
+function checkButton(x, n, err) {
+  if (x.type === 'COPY_CODE') {
+    if (!(x.example || '').trim()) err(`${n}: add a sample offer code.`);
+    else if (x.example.trim().length > LIMIT.copy) err(`${n}: offer code is max 15 characters.`);
+    return;
+  }
+  const text = (x.text || '').trim();
+  if (!text) err(`${n}: button text is empty.`);
+  else if (text.length > LIMIT.btnText) err(`${n}: text is ${text.length}/25 characters.`);
+  if (x.type === 'URL') {
+    const u = (x.url || '').trim();
+    if (!/^https?:\/\/[^\s/?#]+\.[^\s]+$/i.test(u.replace(VAR_RE, 'x'))) err(`${n}: enter a full website address starting with https://`);
+    const c = varCount(u);
+    if (c > 1) err(`${n}: a URL can have only one variable.`);
+    else if (c === 1) {
+      if (varsIn(u)[0] !== 1) err(`${n}: the URL variable must be {{1}}.`);
+      if (!/\{\{\s*1\s*\}\}$/.test(u)) err(`${n}: the variable must be at the very end of the URL.`);
+      if (!(x.sample || '').trim()) err(`${n}: add a sample value for the URL variable.`);
+    }
+  }
+  if (x.type === 'PHONE_NUMBER' && !/^\+[1-9]\d{7,14}$/.test((x.phone || '').replace(/[\s()-]/g, ''))) {
+    err(`${n}: start the number with + and the country code, e.g. +919876543210.`);
+  }
+}
+
+function validateCard(card, i, err, warn) {
+  const c = state.carousel; const n = `Card ${i + 1}`;
+  if (!card.handle.trim() && !pendingFiles.has(card.id)) err(`${n}: add the ${c.media === 'VIDEO' ? 'video' : 'image'}.`);
+  checkText(card.body, card.samples, n, err, warn, LIMIT.cardBody, 'warn');
+  c.buttonTypes.forEach((type, j) => checkButton({ type, ...card.buttons[j] }, `${n}, button ${j + 1}`, err));
+}
+
+function validate() {
+  const s = state; const out = [];
+  const err = m => out.push({ level: 'error', m });
+  const warn = m => out.push({ level: 'warn', m });
+
+  if (!config.ready) err('Settings: add API key, token, Account SID and WABA ID.');
+  if (!s.name) err('Give the template a name.');
+  else if (!/^[a-z0-9_]+$/.test(s.name)) err('Name can only use lowercase letters, numbers and _.');
+  else if (s.name.length > 512) err('Name is longer than 512 characters.');
+
+  if (s.category === 'AUTHENTICATION') {
+    const a = s.auth;
+    if (String(a.expiry).trim() && !(Number(a.expiry) >= 1 && Number(a.expiry) <= 90)) err('Code expiry must be 1–90 minutes.');
+    if (a.buttonText.length > LIMIT.btnText) err('Button label is longer than 25 characters.');
+    if (a.otpType === 'ONE_TAP') {
+      if (!/^[a-zA-Z]\w*(\.[a-zA-Z]\w*)+$/.test(a.packageName.trim())) err('One-tap needs an Android package name like com.company.app.');
+      if (!/^[A-Za-z0-9+/=]{11}$/.test(a.signatureHash.trim())) err('App signing key hash must be exactly 11 characters.');
+    }
+    if (String(a.ttl).trim() && !(Number(a.ttl) >= 30 && Number(a.ttl) <= 900)) warn('Message expiry for OTPs is usually 30–900 seconds.');
+    return out;
+  }
+
+  if (mode() === 'carousel') {
+    const c = s.carousel;
+    checkText(s.body, s.samples, 'Message bubble', err, warn, LIMIT.body);
+    if (s.category !== 'MARKETING') warn('Exotel’s API docs list carousels under Marketing — a Utility carousel may be refused.');
+    if (c.cards.length < 2) warn('Carousels normally have at least 2 cards.');
+    if (c.cards.length > LIMIT.cards) err('Maximum 10 cards.');
+    if (!c.buttonTypes.length) err('Each card needs at least one button.');
+    c.cards.forEach((card, i) => validateCard(card, i, err, warn));
+    return out;
+  }
+
+  // Header
+  if (s.headerType === 'TEXT') {
+    const t = s.headerText;
+    if (!t.trim()) err('Header text is empty — type something or pick “None”.');
+    if (t.length > LIMIT.header) err(`Header is ${t.length}/60 characters.`);
+    const hv = varsIn(t);
+    if (varCount(t) > 1) err('A header can have only one variable.');
+    else if (hv.length === 1 && hv[0] !== 1) err('The header variable must be {{1}}.');
+    if (hv.length && !s.headerSample.trim()) err('Add a sample value for the header variable.');
+    if (EMOJI_RE.test(t)) err('Headers can’t contain emojis.');
+    if (/[*_~`]/.test(t.replace(VAR_RE, ''))) warn('Headers don’t support formatting — * _ ~ ` show up as plain symbols.');
+  } else if (MEDIA[s.headerType] && !s.headerHandle.trim() && !pendingFiles.has('header')) {
+    err(`Add a sample ${s.headerType === 'DOCUMENT' ? 'PDF' : s.headerType.toLowerCase()} for the header (Meta reviews it).`);
+  }
+
+  // Body
+  checkText(s.body, s.samples, 'Body', err, warn, LIMIT.body);
+
+  // Footer
+  if (s.footer.length > LIMIT.footer) err(`Footer is ${s.footer.length}/60 characters.`);
+  if (varCount(s.footer)) err('Footer can’t contain variables.');
+
+  // Buttons
+  const cnt = t => s.buttons.filter(x => x.type === t).length;
+  if (s.buttons.length > LIMIT.buttons) err('Maximum 10 buttons.');
+  if (cnt('URL') > 2) err('Maximum 2 website buttons.');
+  if (cnt('PHONE_NUMBER') > 1) err('Maximum 1 call button.');
+  if (cnt('COPY_CODE') > 1) err('Maximum 1 copy-code button.');
+  if (cnt('COPY_CODE') && s.category !== 'MARKETING') warn('Copy-code buttons are meant for Marketing templates.');
+  s.buttons.forEach((x, i) => checkButton(x, `Button ${i + 1}`, err));
+  return out;
+}
+
+// ───────────── rendering ─────────────
+function setCounter(id, len, max) {
+  const el = $(id); el.textContent = `${len}/${max}`; el.classList.toggle('over', len > max);
+}
+
+function applyVisibility() {
+  const m = mode();
+  $$('[data-mode]').forEach(el => { el.hidden = !el.dataset.mode.split(' ').includes(m); });
+  $$('#kinds button').forEach(b => b.classList.toggle('on', b.dataset.kind === currentKind()));
+  $('#bodyTitle').textContent = m === 'carousel' ? 'Message bubble (shown above the cards)' : 'Message body';
+  $('#hdr-text').hidden = state.headerType !== 'TEXT';
+  $('#hdr-media').hidden = !MEDIA[state.headerType];
+  if (MEDIA[state.headerType]) $('#f-file').accept = MEDIA[state.headerType].accept;
+  $('#c-file').accept = MEDIA[state.carousel.media].accept;
+  renderDrop();
+  $('#a-onetap').hidden = state.auth.otpType !== 'ONE_TAP';
+  $$('#f-category button').forEach(b => b.classList.toggle('on', b.dataset.v === state.category));
+  $$('#f-headerType button').forEach(b => b.classList.toggle('on', b.dataset.v === state.headerType));
+}
+
+let lastSampleSig = null;
+function renderSamples() {
+  const vars = varsIn(state.body);
+  const sig = vars.join(',');
+  if (sig === lastSampleSig) return;
+  lastSampleSig = sig;
+  const box = $('#samples');
+  if (!vars.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="lbl">Sample values <span class="opt">— Meta reviews the template with these, customers never see them</span></div>
+    <div class="sample-grid">${vars.map(n => `<label class="sample"><span class="var-tag">{{${n}}}</span>
+      <input data-sample="${n}" value="${esc(state.samples[n] ?? '')}" placeholder="e.g. ${esc(SAMPLE_HINTS[(n - 1) % SAMPLE_HINTS.length])}"></label>`).join('')}</div>`;
+}
+
+function fieldHTML(label, key, value, placeholder, extraClass = '', after = '') {
+  return `<label class="field ${extraClass}"><span class="lbl">${label}</span>
+    <div class="input-row"><input data-k="${key}" value="${esc(value ?? '')}" placeholder="${esc(placeholder)}" spellcheck="false">${after}</div></label>`;
+}
+
+function renderButtons() {
+  $('#buttonsList').innerHTML = state.buttons.map((b, i) => {
+    const meta = BTN_META[b.type];
+    let fields = '';
+    if (b.type === 'COPY_CODE') {
+      fields = fieldHTML('Sample offer code (max 15)', 'example', b.example, 'SAVE20');
+    } else {
+      fields = fieldHTML('Button text (max 25)', 'text', b.text, meta.text);
+      if (b.type === 'URL') {
+        fields += fieldHTML('Website URL', 'url', b.url, 'https://example.com/launch', '',
+          '<button type="button" class="btn sm" data-urlvar title="Add a variable at the end of the URL">+ {{1}}</button>');
+        fields += `<div class="url-sample full" ${varCount(b.url) ? '' : 'hidden'}>${fieldHTML('Sample value for {{1}} in the URL', 'sample', b.sample, 'whitefield-towers')}</div>`;
+      }
+      if (b.type === 'PHONE_NUMBER') fields += fieldHTML('Phone number with country code', 'phone', b.phone, '+919876543210');
+    }
+    return `<div class="btn-row" data-i="${i}">
+      <div class="btn-row-head"><span class="btn-type">${meta.icon} ${meta.label}</span>
+        <span><button type="button" class="icon-btn" data-move="-1" title="Move up">↑</button><button type="button" class="icon-btn" data-move="1" title="Move down">↓</button><button type="button" class="icon-btn danger" data-remove title="Remove">✕</button></span></div>
+      <div class="btn-fields">${fields}</div></div>`;
+  }).join('');
+  updateAddButtons();
+}
+
+function updateAddButtons() {
+  const cnt = t => state.buttons.filter(x => x.type === t).length;
+  const full = state.buttons.length >= LIMIT.buttons;
+  const caps = { QUICK_REPLY: 99, URL: 2, PHONE_NUMBER: 1, COPY_CODE: 1 };
+  $$('[data-add]').forEach(b => { b.disabled = full || cnt(b.dataset.add) >= caps[b.dataset.add]; });
+}
+
+// ───────────── carousel editor ─────────────
+function renderDrop() {
+  const rules = MEDIA[state.headerType]; if (!rules) return;
+  const d = $('#drop');
+  const isImg = state.headerType === 'IMAGE'; const isVid = state.headerType === 'VIDEO';
+  if (headerPreviewUrl && (isImg || isVid)) {
+    d.classList.add('thumb'); d.title = 'Click to replace';
+    d.innerHTML = isImg ? `<img src="${headerPreviewUrl}" alt="">` : `<video src="${headerPreviewUrl}" muted></video>`;
+  } else {
+    d.classList.remove('thumb'); d.title = '';
+    d.innerHTML = `<b>Choose a sample file</b> or drop it here<br><small class="hint">${rules.label}</small>${state.headerFileName ? `<br><small>${esc(state.headerFileName)}</small>` : ''}`;
+  }
+}
+
+function renderCardTabs() {
+  const c = state.carousel;
+  $('#cardTabs').innerHTML = c.cards.map((card, i) => {
+    const errs = []; validateCard(card, i, m => errs.push(m), () => {});
+    const url = cardPreview.get(card.id); const img = url && c.media === 'IMAGE';
+    return `<button type="button" class="ctab ${i === c.active ? 'on' : ''}" data-ctab="${i}">
+      <span class="ctab-thumb" ${img ? `style="background-image:url('${url}')"` : ''}>${img ? '' : i + 1}</span>Card ${i + 1}
+      <span class="st ${errs.length ? 'bad' : ''}" title="${esc(errs.length ? errs.join('\n') : 'Complete')}"></span></button>`;
+  }).join('');
+  $('#cardCountLbl').textContent = `${c.cards.length} of ${LIMIT.cards}`;
+  $('#addCardBtn').disabled = c.cards.length >= LIMIT.cards;
+}
+
+let cardSampleSig = null;
+function renderCardSamples() {
+  const card = activeCard(); const box = $('#c-samples');
+  if (!card || !box) return;
+  const vars = varsIn(card.body);
+  const sig = `${card.id}:${vars.join(',')}`;
+  if (sig === cardSampleSig) return;
+  cardSampleSig = sig;
+  box.innerHTML = vars.length ? `<div class="lbl">Sample values</div><div class="sample-grid">${vars.map(n => `<label class="sample"><span class="var-tag">{{${n}}}</span>
+    <input data-csample="${n}" value="${esc(card.samples[n] ?? '')}" placeholder="e.g. ${esc(SAMPLE_HINTS[(n + 1) % SAMPLE_HINTS.length])}"></label>`).join('')}</div>` : '';
+}
+
+function renderCardEditor() {
+  const c = state.carousel;
+  if (!c.cards.length) c.cards.push(newCard());
+  c.active = Math.min(Math.max(0, c.active), c.cards.length - 1);
+  const card = activeCard(); const i = c.active; const rules = MEDIA[c.media];
+  const kind = c.media === 'VIDEO' ? 'video' : 'image';
+  const url = cardPreview.get(card.id);
+  const media = url ? (c.media === 'IMAGE' ? `<img src="${url}" alt="">` : `<video src="${url}" muted></video>`)
+    : `<span><b>Choose ${kind}</b><br><small class="hint">${rules.label}</small></span>`;
+  const btns = c.buttonTypes.map((type, j) => {
+    const b = card.buttons[j] || (card.buttons[j] = blankCardBtn());
+    const meta = BTN_META[type];
+    let f = fieldHTML('Button text (max 25)', 'text', b.text, meta.text);
+    if (type === 'URL') {
+      f += fieldHTML('Website URL', 'url', b.url, 'https://example.com/p', '',
+        '<button type="button" class="btn sm" data-curlvar title="Add a variable at the end of the URL">+ {{1}}</button>');
+      f += `<div class="url-sample" ${varCount(b.url) ? '' : 'hidden'}>${fieldHTML('Sample value for {{1}}', 'sample', b.sample, 'skyline-towers')}</div>`;
+    }
+    if (type === 'PHONE_NUMBER') f += fieldHTML('Phone with country code', 'phone', b.phone, '+919876543210');
+    return `<div class="card-btn" data-cb="${j}"><div class="btn-type" style="margin-bottom:6px">${meta.icon} Button ${j + 1} · ${meta.label}</div>${f}</div>`;
+  }).join('');
+  $('#cardEditor').innerHTML = `<div class="card-ed">
+    <div class="card-ed-head"><b>Card ${i + 1}</b>
+      <span class="head-actions">
+        <button type="button" class="icon-btn" data-cmove="-1" title="Move left" ${i === 0 ? 'disabled' : ''}>←</button>
+        <button type="button" class="icon-btn" data-cmove="1" title="Move right" ${i === c.cards.length - 1 ? 'disabled' : ''}>→</button>
+        <button type="button" class="btn xs" data-cdup ${c.cards.length >= LIMIT.cards ? 'disabled' : ''}>Duplicate</button>
+        <button type="button" class="btn xs" data-cdel ${c.cards.length <= 1 ? 'disabled' : ''}>Delete</button>
+      </span></div>
+    <div class="card-ed-grid">
+      <div>
+        <div class="drop thumb" data-cdrop tabindex="0" role="button" title="Click or drop a file">${media}</div>
+        <div class="media-status" id="c-mediaStatus">${pendingFiles.has(card.id) && !config.ready ? 'Uploads once your Exotel details are saved in Settings.'
+          : card.handle && !url ? `Sample uploaded${card.fileName ? `: ${esc(card.fileName)}` : ''}` : ''}</div>
+        <input data-ck="handle" value="${esc(card.handle)}" placeholder="Media handle (auto)" spellcheck="false" aria-label="Media handle">
+      </div>
+      <div>
+        <div class="toolbar">
+          <button type="button" data-cfmt="bold" title="Bold"><b>B</b></button>
+          <button type="button" data-cfmt="italic" title="Italic"><i>I</i></button>
+          <button type="button" data-cfmt="strike" title="Strikethrough"><s>S</s></button>
+          <button type="button" data-cfmt="var" class="push accent" title="Insert the next variable">+ Variable</button>
+        </div>
+        <textarea data-ck="body" placeholder="Card text, e.g. 3 BHK from {{1}} · possession {{2}}">${esc(card.body)}</textarea>
+        <div class="meta-row"><span class="hint">Shown under the ${kind}. Variables restart at {{1}} on each card.</span><span class="counter" id="c-cardCounter">0/160</span></div>
+        <div id="c-samples" class="samples"></div>
+      </div>
+    </div>
+    <div class="card-btns">${btns}</div>
+  </div>`;
+  cardSampleSig = null;
+}
+
+function setCardStatus(kind, msg) { const el = $('#c-mediaStatus'); if (el) { el.className = `media-status ${kind}`; el.textContent = msg; } }
+
+function onCardFile(file, card = activeCard()) {
+  const rules = MEDIA[state.carousel.media];
+  if (!file || !card) return false;
+  const problem = fileProblem(file, rules);
+  if (problem) { if (activeCard() === card) setCardStatus('bad', problem); else toast(`${file.name}: ${problem}`, 'bad'); return false; }
+  cardPreview.set(card.id, URL.createObjectURL(file));
+  card.fileName = file.name; card.handle = '';
+  pendingFiles.set(card.id, file);
+  if (activeCard() === card) renderCardEditor();
+  changed();
+  uploadKey(card.id);
+  return true;
+}
+
+/** One card per file: fills empty cards first, then adds new ones (max 10) */
+function addCardsFromFiles(fileList) {
+  const files = [...fileList]; const c = state.carousel;
+  if (!files.length) return;
+  const kind = files.every(f => f.type.startsWith('video/')) ? 'VIDEO' : 'IMAGE';
+  if (kind !== c.media && !c.cards.some(x => x.handle || pendingFiles.has(x.id))) { // nothing chosen yet → follow the files
+    c.media = kind; $('#c-media').value = kind; $('#c-file').accept = MEDIA[kind].accept;
+  }
+  let first = -1;
+  for (let k = 0; k < files.length; k++) {
+    let i = c.cards.findIndex(x => !x.handle && !pendingFiles.has(x.id));
+    if (i === -1) {
+      if (c.cards.length >= LIMIT.cards) { toast(`A carousel holds at most ${LIMIT.cards} cards — ${files.length - k} file(s) left out.`, 'warn', 6000); break; }
+      const card = newCard();
+      card.buttons = JSON.parse(JSON.stringify(c.cards[0].buttons)); // same buttons as card 1 — usually what you want
+      c.cards.push(card); i = c.cards.length - 1;
+    }
+    if (onCardFile(files[k], c.cards[i]) && first < 0) first = i;
+  }
+  if (first >= 0) selectCard(first);
+}
+
+function selectCard(i) { state.carousel.active = i; renderCardEditor(); changed(); }
+
+function mediaPreviewHTML() {
+  const t = state.headerType;
+  if (t === 'IMAGE') return `<div class="b-media">${headerPreviewUrl ? `<img src="${headerPreviewUrl}" alt="">` : 'IMAGE'}</div>`;
+  if (t === 'VIDEO') return `<div class="b-media video">${headerPreviewUrl ? `<video src="${headerPreviewUrl}" muted></video>` : '▶ VIDEO'}</div>`;
+  return `<div class="b-doc"><span class="ext">PDF</span><span>${esc(state.headerFileName || 'document.pdf')}</span></div>`;
+}
+
+let lastPreviewActive = -1;
+function renderPreview() {
+  const s = state;
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  let bubble = ''; let btns = [];
+  if (mode() === 'carousel') {
+    const c = s.carousel; const row = $('#preview .cards-row'); const keep = row ? row.scrollLeft : 0;
+    bubble += `<div class="b-body">${s.body.trim() ? waFormat(s.body.trim(), s.samples) : '<span class="ph">Message bubble text…</span>'}</div><div class="b-time">${time}</div>`;
+    const cards = c.cards.map((card, i) => {
+      const url = cardPreview.get(card.id);
+      const media = c.media === 'IMAGE'
+        ? `<div class="b-media">${url ? `<img src="${url}" alt="">` : 'IMAGE'}</div>`
+        : `<div class="b-media video">${url ? `<video src="${url}" muted></video>` : '▶ VIDEO'}</div>`;
+      const btnHtml = c.buttonTypes.map((type, j) => `<div class="b-btn">${BTN_META[type].icon} ${esc((card.buttons[j]?.text || '').trim() || BTN_META[type].text)}</div>`).join('');
+      return `<div class="c-card ${i === c.active ? 'on' : ''}" data-ci="${i}" title="Edit card ${i + 1}">${media}
+        <div class="c-body">${card.body.trim() ? waFormat(card.body.trim(), card.samples) : '<span class="ph">Card text…</span>'}</div>
+        <div class="b-btns">${btnHtml}</div></div>`;
+    }).join('');
+    $('#preview').innerHTML = `<div class="msg"><div class="bubble">${bubble}</div></div><div class="cards-row">${cards}</div>`;
+    const newRow = $('#preview .cards-row');
+    if (lastPreviewActive !== c.active) {
+      const on = $('.c-card.on', newRow); if (on) newRow.scrollLeft = on.offsetLeft - 8;
+      lastPreviewActive = c.active;
+    } else newRow.scrollLeft = keep;
+    return;
+  }
+  if (s.category === 'AUTHENTICATION') {
+    const a = s.auth;
+    bubble += `<div class="b-body"><b>482913</b> is your verification code.${a.security ? ' For your security, do not share this code.' : ''}</div>`;
+    if (String(a.expiry).trim()) bubble += `<div class="b-foot">This code expires in ${esc(a.expiry)} minutes.</div>`;
+    btns = [`⧉ ${esc(a.buttonText.trim() || (a.otpType === 'ONE_TAP' ? 'Autofill' : 'Copy code'))}`];
+  } else {
+    if (s.headerType === 'TEXT' && s.headerText.trim()) bubble += `<div class="b-head">${fillVars(esc(s.headerText), { 1: s.headerSample })}</div>`;
+    if (MEDIA[s.headerType]) bubble += mediaPreviewHTML();
+    bubble += `<div class="b-body">${s.body.trim() ? waFormat(s.body.trim(), s.samples) : '<span class="ph">Your message shows up here…</span>'}</div>`;
+    if (s.footer.trim()) bubble += `<div class="b-foot">${esc(s.footer)}</div>`;
+    const ob = orderedButtons();
+    const label = b => b.type === 'COPY_CODE' ? 'Copy offer code' : (b.text || '').trim() || BTN_META[b.type].text;
+    btns = (ob.length > 3 ? ob.slice(0, 2) : ob).map(b => `${BTN_META[b.type].icon} ${esc(label(b))}`);
+    if (ob.length > 3) btns.push('☰ See all options');
+  }
+  bubble += `<div class="b-time">${time}</div>`;
+  $('#preview').innerHTML = `<div class="msg ${btns.length ? 'with-btns' : ''}"><div class="bubble">${bubble}</div>${
+    btns.length ? `<div class="b-btns">${btns.map(b => `<div class="b-btn">${b}</div>`).join('')}</div>` : ''}</div>`;
+}
+
+function renderChecks() {
+  const list = validate();
+  const errors = list.filter(x => x.level === 'error').length;
+  const warns = list.length - errors;
+  const items = list.length ? list : [{ level: 'ok', m: 'Looks good — ready to submit.' }];
+  $('#checks').innerHTML = items.map(x => `<li class="${x.level}"><i>${x.level === 'error' ? '✕' : x.level === 'warn' ? '!' : '✓'}</i><span>${esc(x.m)}</span></li>`).join('');
+  $('#checkSummary').innerHTML = errors ? `<span style="color:var(--bad)">${errors} to fix</span>` : warns ? `<span style="color:var(--warn)">${warns} warning${warns > 1 ? 's' : ''}</span>` : `<span style="color:var(--ok)">Ready</span>`;
+  $('#submitBtn').disabled = errors > 0;
+}
+
+function changed() {
+  const s = state;
+  setCounter('#c-header', s.headerText.length, LIMIT.header);
+  setCounter('#c-body', s.body.length, LIMIT.body);
+  setCounter('#c-footer', s.footer.length, LIMIT.footer);
+  $('#hdr-sample-wrap').hidden = !varCount(s.headerText);
+  $$('#buttonsList .btn-row').forEach(row => {
+    const b = s.buttons[row.dataset.i]; const us = $('.url-sample', row);
+    if (b && us) us.hidden = !varCount(b.url);
+  });
+  renderSamples();
+  if (mode() === 'carousel') {
+    const card = activeCard();
+    if (card && $('#c-cardCounter')) setCounter('#c-cardCounter', card.body.length, LIMIT.cardBody);
+    $$('#cardEditor .card-btn').forEach(el => {
+      const b = card?.buttons[el.dataset.cb]; const us = $('.url-sample', el);
+      if (b && us) us.hidden = !varCount(b.url);
+    });
+    renderCardSamples();
+    renderCardTabs();
+  }
+  renderPreview();
+  renderChecks();
+  $('#jsonOut').textContent = JSON.stringify(requestBody(), null, 2);
+  store.set('waba-draft', state);
+}
+
+function fillForm() {
+  const s = state;
+  $('#f-name').value = s.name;
+  $('#f-language').value = s.language;
+  if ($('#f-language').value !== s.language) {
+    $('#f-language').append(new Option(s.language, s.language)); $('#f-language').value = s.language;
+  }
+  $('#f-headerText').value = s.headerText;
+  $('#f-headerSample').value = s.headerSample;
+  $('#f-headerHandle').value = s.headerHandle;
+  $('#f-body').value = s.body;
+  $('#f-footer').value = s.footer;
+  $('#a-security').checked = Boolean(s.auth.security);
+  $('#a-expiry').value = s.auth.expiry;
+  $('#a-otpType').value = s.auth.otpType;
+  $('#a-buttonText').value = s.auth.buttonText;
+  $('#a-ttl').value = s.auth.ttl;
+  $('#a-package').value = s.auth.packageName;
+  $('#a-hash').value = s.auth.signatureHash;
+  setMediaStatus('', s.headerHandle && s.headerFileName ? `Using uploaded sample: ${s.headerFileName}` : '');
+  $('#c-media').value = s.carousel.media;
+  $('#c-btn0').value = s.carousel.buttonTypes[0] || 'QUICK_REPLY';
+  $('#c-btn1').value = s.carousel.buttonTypes[1] || '';
+  lastSampleSig = null; lastPreviewActive = -1;
+  renderButtons();
+  renderCardEditor();
+  applyVisibility();
+  changed();
+}
+
+// ───────────── media upload ─────────────
+function setMediaStatus(kind, msg) { const el = $('#mediaStatus'); el.className = `media-status ${kind}`; el.textContent = msg; }
+
+function fileProblem(file, rules) {
+  if (!rules.types.includes(file.type)) return `That file is ${file.type || 'an unknown type'}. Use ${rules.label}.`;
+  if (file.size > rules.maxMB * 1048576) return `File is ${(file.size / 1048576).toFixed(1)} MB — the limit is ${rules.maxMB} MB.`;
+  return '';
+}
+async function uploadToExotel(file) {
+  const r = await api(`/api/upload-sample?type=${encodeURIComponent(file.type)}`, { method: 'POST', body: file, headers: { 'Content-Type': file.type } });
+  return r.handle;
+}
+
+function onFile(file) {
+  const rules = MEDIA[state.headerType];
+  if (!rules || !file) return;
+  const problem = fileProblem(file, rules);
+  if (problem) return setMediaStatus('bad', problem);
+  if (headerPreviewUrl) URL.revokeObjectURL(headerPreviewUrl);
+  headerPreviewUrl = URL.createObjectURL(file);
+  state.headerFileName = file.name; state.headerHandle = ''; $('#f-headerHandle').value = '';
+  pendingFiles.set('header', file);
+  renderDrop(); changed();
+  uploadKey('header');
+}
+
+function mediaMsg(key, kind, msg) {
+  if (key === 'header') setMediaStatus(kind, msg);
+  else if (activeCard()?.id === key) setCardStatus(kind, msg);
+}
+
+/**
+ * Upload the file waiting under `key`. Without Exotel details it just waits — saving
+ * Settings or pressing Submit uploads it, so nobody has to pick files twice.
+ */
+function uploadKey(key) {
+  const file = pendingFiles.get(key);
+  if (!file) return Promise.resolve();
+  const running = inflight.get(key);
+  if (running?.file === file) return running.p;
+  if (!config.ready) { mediaMsg(key, 'busy', `${file.name} is ready — it uploads once your Exotel details are saved in Settings.`); return Promise.resolve(); }
+  mediaMsg(key, 'busy', `Uploading ${file.name} to Exotel…`);
+  const owner = config.profileId;
+  let again = false;
+  const p = uploadToExotel(file).then(handle => {
+    if (pendingFiles.get(key) !== file) return; // replaced or removed meanwhile
+    if (config.profileId !== owner) { again = true; return; } // account switched mid-upload: that handle is no good here
+    pendingFiles.delete(key);
+    uploaded.set(key, { file, handle, profileId: owner });
+    if (key === 'header') { state.headerHandle = handle; $('#f-headerHandle').value = handle; }
+    else {
+      const card = state.carousel.cards.find(c => c.id === key);
+      if (card) { card.handle = handle; if (activeCard() === card) renderCardEditor(); }
+    }
+    mediaMsg(key, 'ok', `Uploaded ✓ ${file.name}`);
+  }, e => mediaMsg(key, 'bad', `${e.message} — it will retry when you submit.`))
+    .finally(() => { if (inflight.get(key)?.p === p) inflight.delete(key); if (again) uploadKey(key); changed(); });
+  inflight.set(key, { file, p });
+  return p;
+}
+
+/**
+ * Media handles only work on the Exotel account that issued them. After a switch, any sample
+ * this window uploaded goes back in the queue and is uploaded again with the new account.
+ */
+function requeueUploadsFor(profileId) {
+  for (const [key, u] of uploaded) {
+    if (u.profileId === profileId) continue;
+    uploaded.delete(key);
+    const current = key === 'header' ? state.headerHandle : state.carousel.cards.find(c => c.id === key)?.handle;
+    if (current !== u.handle) continue; // the handle was replaced or cleared since
+    if (key === 'header') { state.headerHandle = ''; $('#f-headerHandle').value = ''; }
+    else state.carousel.cards.find(c => c.id === key).handle = '';
+    pendingFiles.set(key, u.file);
+  }
+  if (activeCard()) renderCardEditor();
+}
+
+/** Pending uploads that still matter for the current template */
+function relevantPending() {
+  return [...pendingFiles.keys()].filter(k => (k === 'header'
+    ? mode() === 'standard' && MEDIA[state.headerType]
+    : mode() === 'carousel' && state.carousel.cards.some(c => c.id === k)));
+}
+const uploadAllPending = () => Promise.all(relevantPending().map(uploadKey));
+
+function setHeaderType(v) {
+  if (v === state.headerType) return;
+  if (MEDIA[state.headerType] || MEDIA[v]) {
+    state.headerHandle = ''; state.headerFileName = ''; $('#f-headerHandle').value = ''; setMediaStatus('', '');
+    if (headerPreviewUrl) { URL.revokeObjectURL(headerPreviewUrl); headerPreviewUrl = ''; }
+    pendingFiles.delete('header');
+  }
+  state.headerType = v;
+}
+
+/** The "What do you want to send?" picker */
+function applyKind(kind) {
+  const s = state;
+  const fresh = !s.body.trim() && !s.buttons.length && s.carousel.cards.every(c => !c.body.trim());
+  if (kind === 'OTP') s.category = 'AUTHENTICATION';
+  else {
+    if (s.category === 'AUTHENTICATION') s.category = 'MARKETING';
+    s.format = kind === 'CAROUSEL' ? 'CAROUSEL' : 'STANDARD';
+    if (kind === 'CAROUSEL') s.category = 'MARKETING'; // Exotel only lists carousels under Marketing
+    else setHeaderType(kind === 'TEXT' ? (s.headerType === 'TEXT' ? 'TEXT' : 'NONE') : kind);
+  }
+  const ex = STARTERS[kind];
+  lastPreviewActive = -1;
+  if (!fresh || !ex) { renderCardEditor(); applyVisibility(); changed(); return; }
+  s.body = ex.body; s.samples = { ...ex.samples };
+  if (ex.buttons) s.buttons = ex.buttons.map(b => ({ ...b }));
+  if (ex.cards) {
+    const c = s.carousel;
+    c.buttonTypes = ['QUICK_REPLY'];
+    while (c.cards.length < ex.cards.length) c.cards.push(newCard());
+    ex.cards.forEach(([body, sample], i) => {
+      c.cards[i].body = body; c.cards[i].samples = { 1: sample }; c.cards[i].buttons[0].text = ex.cardButton;
+    });
+  }
+  const keepStatus = $('#mediaStatus').textContent; const keepKind = $('#mediaStatus').className;
+  fillForm();
+  if (pendingFiles.has('header')) { $('#mediaStatus').className = keepKind; $('#mediaStatus').textContent = keepStatus; }
+  toast('Example filled in — replace the text and sample values with your own.', 'ok', 3500);
+}
+
+// ───────────── submit ─────────────
+function showResult(kind, html) { $('#submitResult').innerHTML = `<div class="result ${kind}">${html}</div>`; }
+
+async function submit() {
+  if (validate().some(x => x.level === 'error')) { toast('Fix the items under Checks first.', 'bad'); return; }
+  const { name, category, language } = state;
+  if (!confirm(`Submit "${name}" (${category}, ${language}) for Meta's review?\n\nAccount: ${config.profileName}\nWABA: ${config.wabaId}`)) return;
+  const btn = $('#submitBtn'); btn.disabled = true;
+  try {
+    if (relevantPending().length) {
+      btn.textContent = 'Uploading media…';
+      await uploadAllPending();
+      if (relevantPending().length) {
+        showResult('bad', '<b>Some media didn’t upload.</b> See the message under the file, fix it and submit again.');
+        return;
+      }
+    }
+    btn.textContent = 'Submitting…';
+    const t = buildTemplate();
+    const r = await api('/api/templates', { method: 'POST', json: { template: t } });
+    const raw = `<details><summary>Exotel response</summary><pre>${esc(JSON.stringify(r.exotel, null, 2))}</pre></details>`;
+    if (r.accepted) {
+      const how = config.pollMinutes ? `The status updates here by itself (checked every ${config.pollMinutes} min, instantly if the webhook is set up).` : 'The status updates here when the webhook fires.';
+      showResult('ok', `<b>Submitted.</b> Template ID ${esc(r.entry.id || '—')} · status <b>${esc(r.entry.status)}</b>.<br>Meta usually replies within minutes to a few hours. ${how}${raw}`);
+      toast(`“${t.name}” sent for review`, 'ok');
+    } else {
+      showResult('bad', `<b>Exotel didn't accept it.</b> ${esc(r.reason)}${raw}`);
+      toast('Submission failed — see details', 'bad');
+    }
+  } catch (e) {
+    showResult('bad', `<b>Couldn't submit.</b> ${esc(e.message)}`);
+  } finally {
+    btn.textContent = 'Submit to Exotel for approval';
+    renderChecks();
+  }
+}
+
+function curlCommand() {
+  const base = (config.apiBase || 'https://api.in.exotel.com').replace(/^https?:\/\//, '');
+  const proto = (config.apiBase || '').startsWith('http://') ? 'http' : 'https';
+  const json = JSON.stringify(requestBody(), null, 2).replace(/'/g, `'\\''`);
+  return `curl --location --request POST '${proto}://<API_KEY>:<API_TOKEN>@${base}/v2/accounts/${config.accountSid || '<ACCOUNT_SID>'}/templates?waba_id=${config.wabaId || '<WABA_ID>'}' \\\n--header 'Content-Type: application/json' \\\n--data '${json}'`;
+}
+
+// ───────────── library ─────────────
+/** Name of the saved account a template's WABA belongs to, for the "All accounts" view */
+function accountName(wabaId) {
+  const names = (config.profiles || []).filter(p => p.wabaId && p.wabaId === wabaId).map(p => p.name);
+  return names.length ? names.join(' / ') : wabaId ? `WABA ${wabaId}` : 'unknown account';
+}
+
+function renderLibrary() {
+  const all = $('#libScope').value === 'all';
+  const scoped = all ? registry : registry.filter(e => e.wabaId === config.wabaId);
+  $('#libCount').textContent = scoped.length;
+  const q = $('#libSearch').value.trim().toLowerCase();
+  const f = $('#libStatus').value;
+  const rows = scoped.filter(e => (!q || (e.name || '').toLowerCase().includes(q)) && (!f || e.status === f));
+  $('#libTable tbody').innerHTML = rows.map(e => `<tr>
+    <td><div class="t-name">${esc(e.name)}</div><div class="t-sub">${e.id ? `ID ${esc(e.id)}` : 'not created on Meta'}${all ? ` · ${esc(accountName(e.wabaId))}` : ''}</div></td>
+    <td>${esc(e.language || '')}</td>
+    <td>${esc(cap(e.category))}${(() => { const n = carouselCards(e); return n ? `<div class="t-sub">Carousel · ${n} card${n > 1 ? 's' : ''}</div>` : ''; })()}</td>
+    <td>${badge(e.status)}${e.reason ? `<div class="t-reason">${esc(e.reason)}</div>` : ''}</td>
+    <td title="${esc(e.updatedAt || e.createdAt || '')}">${ago(e.updatedAt || e.createdAt)}</td>
+    <td class="t-actions">
+      <button type="button" class="btn xs" data-act="clone" data-key="${esc(e.key)}">${e.status === 'SUBMIT_FAILED' ? 'Fix & retry' : 'Clone'}</button>
+      <button type="button" class="btn xs" data-act="view" data-key="${esc(e.key)}">JSON</button>
+      <button type="button" class="icon-btn danger" data-act="remove" data-key="${esc(e.key)}" title="Remove from this list (does not delete it on Exotel)">✕</button>
+    </td></tr>`).join('');
+  $('#libEmpty').hidden = rows.length > 0;
+  $('#libEmpty').textContent = scoped.length ? 'Nothing matches that filter.'
+    : all ? 'No templates yet. Submit one from Compose, or press Sync.'
+    : `No templates for ${config.profileName || 'this account'} yet. Submit one from Compose, or press Sync.`;
+  renderSimOptions();
+}
+
+function carouselCards(e) {
+  const comp = (e.payload?.components || e.components || []).find(c => String(c.type || '').toUpperCase() === 'CAROUSEL');
+  return comp ? (comp.cards || []).length : 0;
+}
+
+function bumpName(n) {
+  const m = String(n || '').match(/^(.*)_v(\d+)$/);
+  return m ? `${m[1]}_v${Number(m[2]) + 1}` : `${n}_v2`;
+}
+
+function urlSampleFrom(url, example) {
+  if (!url || !varCount(url) || !example) return '';
+  const prefix = url.split('{{')[0];
+  return String(example).startsWith(prefix) ? String(example).slice(prefix.length) : '';
+}
+
+function loadIntoEditor(entry) {
+  const tpl = entry.payload || { name: entry.name, language: entry.language, category: entry.category, components: entry.components || [] };
+  const s = blank();
+  s.name = entry.status === 'SUBMIT_FAILED' ? entry.name : bumpName(entry.name);
+  s.language = tpl.language || 'en';
+  let cat = String(tpl.category || 'MARKETING').toUpperCase();
+  if (cat === 'TRANSACTIONAL') cat = 'UTILITY';
+  s.category = ['MARKETING', 'UTILITY', 'AUTHENTICATION'].includes(cat) ? cat : 'MARKETING';
+  let mediaDropped = false;
+  for (const c of tpl.components || []) {
+    const type = String(c.type || '').toUpperCase();
+    if (type === 'HEADER') {
+      const f = String(c.format || 'TEXT').toUpperCase();
+      s.headerType = ['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'].includes(f) ? f : 'NONE';
+      if (f === 'TEXT') { s.headerText = c.text || ''; s.headerSample = c.example?.header_text?.[0] || ''; }
+      else {
+        const h = c.example?.header_handle?.[0] || '';
+        if (/^https?:/.test(h)) mediaDropped = true; else s.headerHandle = h;
+      }
+    } else if (type === 'BODY') {
+      if (s.category === 'AUTHENTICATION') s.auth.security = c.add_security_recommendation ?? /do not share/i.test(c.text || '');
+      else { s.body = c.text || ''; (c.example?.body_text?.[0] || []).forEach((v, i) => { s.samples[i + 1] = v; }); }
+    } else if (type === 'FOOTER') {
+      if (s.category === 'AUTHENTICATION') {
+        const m = c.code_expiration_minutes || (c.text || '').match(/(\d+)\s*minute/)?.[1];
+        s.auth.expiry = m ? String(m) : '';
+      } else s.footer = c.text || '';
+    } else if (type === 'CAROUSEL') {
+      s.format = 'CAROUSEL';
+      const types = [];
+      s.carousel.cards = (c.cards || []).map((cd, ci) => {
+        const card = newCard();
+        for (const cc of cd.components || []) {
+          const ct = String(cc.type || '').toUpperCase();
+          if (ct === 'HEADER') {
+            s.carousel.media = String(cc.format || 'IMAGE').toUpperCase() === 'VIDEO' ? 'VIDEO' : 'IMAGE';
+            const h = cc.example?.header_handle?.[0] || '';
+            if (/^https?:/.test(h)) mediaDropped = true; else card.handle = h;
+          } else if (ct === 'BODY') {
+            card.body = cc.text || '';
+            (cc.example?.body_text?.[0] || []).forEach((v, i) => { card.samples[i + 1] = v; });
+          } else if (ct === 'BUTTONS') {
+            const bs = (cc.buttons || []).slice(0, 2);
+            if (ci === 0) bs.forEach(b => types.push(String(b.type || '').toUpperCase()));
+            card.buttons = [0, 1].map(j => {
+              const b = bs[j] || {}; const ex = Array.isArray(b.example) ? b.example[0] : b.example;
+              return { text: b.text || '', url: b.url || '', sample: urlSampleFrom(b.url, ex), phone: b.phone_number || '' };
+            });
+          }
+        }
+        return card;
+      });
+      s.carousel.buttonTypes = types.filter(t => ['QUICK_REPLY', 'URL', 'PHONE_NUMBER'].includes(t));
+      if (!s.carousel.buttonTypes.length) s.carousel.buttonTypes = ['QUICK_REPLY'];
+      if (!s.carousel.cards.length) s.carousel.cards = [newCard(), newCard()];
+    } else if (type === 'BUTTONS') {
+      for (const b of c.buttons || []) {
+        const bt = String(b.type || '').toUpperCase();
+        const ex = Array.isArray(b.example) ? b.example[0] : b.example;
+        if (bt === 'OTP') {
+          s.auth.otpType = String(b.otp_type || 'COPY_CODE').toUpperCase() === 'COPY_CODE' ? 'COPY_CODE' : 'ONE_TAP';
+          s.auth.buttonText = b.text || '';
+          const app = b.supported_apps?.[0] || {};
+          s.auth.packageName = app.package_name || b.package_name || '';
+          s.auth.signatureHash = app.signature_hash || b.signature_hash || '';
+        } else if (bt === 'QUICK_REPLY') s.buttons.push({ type: bt, text: b.text || '' });
+        else if (bt === 'URL') s.buttons.push({ type: bt, text: b.text || '', url: b.url || '', sample: urlSampleFrom(b.url, ex) });
+        else if (bt === 'PHONE_NUMBER') s.buttons.push({ type: bt, text: b.text || '', phone: b.phone_number || '' });
+        else if (bt === 'COPY_CODE') s.buttons.push({ type: bt, example: ex || '' });
+      }
+    }
+  }
+  if (tpl.message_send_ttl_seconds) s.auth.ttl = String(tpl.message_send_ttl_seconds);
+  state = s;
+  if (headerPreviewUrl) { URL.revokeObjectURL(headerPreviewUrl); headerPreviewUrl = ''; }
+  clearCardPreviews(); pendingFiles.clear();
+  fillForm();
+  showTab('compose');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast(mediaDropped ? `Loaded as “${s.name}”. Upload the header media again — Meta's stored sample can't be reused.` : `Loaded into the editor as “${s.name}”.`, mediaDropped ? 'warn' : 'ok', 5500);
+}
+
+function openDialog(title, obj) {
+  $('#dlgTitle').textContent = title;
+  $('#dlgBody').textContent = JSON.stringify(obj, null, 2);
+  $('#dlg').showModal();
+}
+
+// ───────────── webhook tab ─────────────
+function renderWebhookInfo() {
+  const port = config.webhook?.port || 3001;
+  $$('.whp').forEach(el => { el.textContent = port; });
+  const base = ($('#tunnelBase').value.trim() || 'https://<your-tunnel>').replace(/\/+$/, '');
+  $('#whFull').textContent = base + (config.webhook?.path || '/webhook/<secret>');
+  $('#secretPath').textContent = config.webhook?.localUrl || '…';
+}
+
+function renderWebhooks() {
+  $('#whList').innerHTML = webhookEvents.slice(0, 100).map(ev => `<details class="ev">
+    <summary><span class="ev-time">${esc(new Date(ev.at).toLocaleString())}</span>
+      <span class="ev-type">${esc(ev.type)}</span>${ev.source === 'test' ? '<span class="tag">test</span>' : ''}
+      ${ev.updates?.length ? ev.updates.map(u => `<span class="ev-up">${esc(u.name || u.id)} → ${badge(u.status)}</span>`).join('') : '<span class="muted">no template status in this event</span>'}
+    </summary><pre>${esc(JSON.stringify(ev.payload, null, 2))}</pre></details>`).join('');
+  $('#whEmpty').hidden = webhookEvents.length > 0;
+}
+
+function renderSimOptions() {
+  const sel = $('#simTemplate'); const keep = sel.value;
+  const usable = registry.filter(e => e.status !== 'SUBMIT_FAILED' && e.wabaId === config.wabaId);
+  sel.innerHTML = usable.map(e => `<option value="${esc(e.key)}">${esc(e.name)} — ${esc(e.status || '')}</option>`).join('') +
+    '<option value="__demo">demo_template (creates a sample row)</option>';
+  if ([...sel.options].some(o => o.value === keep)) sel.value = keep;
+}
+
+async function simulate() {
+  const key = $('#simTemplate').value; const status = $('#simStatus').value;
+  const e = registry.find(x => x.key === key) || { id: '1000000000000001', name: 'demo_template', language: 'en' };
+  // Shaped like Meta's own template-status webhook (the format BSPs usually forward)
+  const payload = {
+    object: 'whatsapp_business_account',
+    entry: [{ id: config.wabaId || 'TEST_WABA', time: Math.floor(Date.now() / 1000), changes: [{
+      field: 'message_template_status_update',
+      value: {
+        event: status, message_template_id: e.id, message_template_name: e.name,
+        message_template_language: e.language,
+        reason: status === 'REJECTED' ? ($('#simReason').value.trim() || 'INVALID_FORMAT') : 'NONE',
+      },
+    }] }],
+  };
+  try { await api('/api/webhook-test', { method: 'POST', json: { payload } }); }
+  catch (err) { toast(err.message, 'bad'); }
+}
+
+// ───────────── settings ─────────────
+const regionName = p => p.region === 'sg' ? 'Singapore' : 'Mumbai';
+
+let shownProfileId; // the account the settings form and media handles were last set up for
+function applyConfig({ background = false } = {}) {
+  const switched = shownProfileId !== undefined && shownProfileId !== config.profileId;
+  const f = $('#settingsForm');
+  // A change pushed from another window never wipes typing in progress here, unless the account changed
+  if (!background || switched || !f.contains(document.activeElement)) {
+    for (const k of ['name', 'apiKey', 'accountSid', 'wabaId', 'baseUrlOverride']) f.elements[k].value = config[k === 'name' ? 'profileName' : k] || '';
+    f.elements.region.value = config.region || 'in';
+    f.elements.apiToken.value = '';
+  }
+  f.elements.apiToken.placeholder = config.apiTokenSet ? `Saved (${config.apiTokenHint}) — leave blank to keep` : 'Paste token';
+  if (switched) { $('#settingsResult').innerHTML = ''; requeueUploadsFor(config.profileId); }
+  shownProfileId = config.profileId;
+
+  const profiles = config.profiles || [];
+  $('#profileSwitch').innerHTML = profiles.map(p =>
+    `<option value="${esc(p.id)}">${esc(p.name)}${p.ready ? '' : ' (incomplete)'}</option>`).join('');
+  $('#profileSwitch').value = config.profileId || '';
+  $('#profileList').innerHTML = profiles.map(p => `<li class="profile${p.id === config.profileId ? ' on' : ''}">
+    <span class="p-dot${p.ready ? ' ready' : ''}" title="${p.ready ? 'Ready' : 'Details missing'}"></span>
+    <div class="p-main"><div class="p-name">${esc(p.name)}</div>
+      <div class="p-sub">${p.wabaId ? `WABA ${esc(p.wabaId)}` : 'No WABA ID yet'} · ${p.accountSid ? esc(p.accountSid) : 'no SID'} · ${regionName(p)}</div></div>
+    ${p.id === config.profileId ? '<span class="p-active">Selected</span>'
+      : `<button type="button" class="btn xs" data-profile="${esc(p.id)}">Switch</button>`}
+  </li>`).join('');
+  $('#deleteProfileBtn').hidden = profiles.length < 2;
+
+  $('#setupBanner').hidden = Boolean(config.ready);
+  $('#setupDot').hidden = Boolean(config.ready);
+  $('#wabaLabel').textContent = config.ready
+    ? `Exotel · ${config.profileName} · WABA ${config.wabaId} · ${config.baseUrlOverride ? 'custom URL' : regionName(config)}`
+    : `Exotel · ${config.profileName || 'not connected'} · details missing`;
+  $('#submitTarget').innerHTML = config.ready
+    ? `Submits to <b>${esc(config.profileName)}</b> · WABA ${esc(config.wabaId)}`
+    : `<b>${esc(config.profileName || 'This account')}</b> needs its details in Settings`;
+  renderWebhookInfo();
+  renderLibrary();
+  renderChecks();
+  if (config.ready && relevantPending().length) uploadAllPending();
+}
+
+async function saveSettings(quiet) {
+  const f = $('#settingsForm');
+  const body = Object.fromEntries(['name', 'apiKey', 'apiToken', 'accountSid', 'wabaId', 'region', 'baseUrlOverride'].map(k => [k, f.elements[k].value]));
+  config = await api('/api/config', { method: 'POST', json: body });
+  applyConfig();
+  if (!quiet) toast(`Saved “${config.profileName}”`, 'ok', 1800);
+}
+
+async function switchProfile(id) {
+  if (!id || id === config.profileId) return;
+  try {
+    config = await api(`/api/profiles/${encodeURIComponent(id)}/activate`, { method: 'POST' });
+    applyConfig();
+    toast(`Switched to ${config.profileName}`, 'ok', 2200);
+  } catch (err) { toast(err.message, 'bad'); applyConfig(); }
+}
+
+// ───────────── live updates ─────────────
+function connectEvents() {
+  const es = new EventSource('/api/events');
+  const live = on => { $('#live').classList.toggle('on', on); $('#liveText').textContent = on ? 'Live' : 'Reconnecting…'; };
+  es.onopen = () => live(true);
+  es.onerror = () => live(false);
+  es.addEventListener('registry', e => { registry = JSON.parse(e.data); renderLibrary(); });
+  es.addEventListener('config', e => {
+    const was = config.profileId;
+    config = JSON.parse(e.data);
+    applyConfig({ background: true });
+    if (was && was !== config.profileId) toast(`Account switched to ${config.profileName} in another window`, 'warn', 5000);
+  });
+  es.addEventListener('status', e => {
+    for (const u of JSON.parse(e.data)) {
+      const kind = u.status === 'APPROVED' ? 'ok' : ['REJECTED', 'DISABLED'].includes(u.status) ? 'bad' : 'warn';
+      toast(`${u.name || u.id}: ${u.status}${u.reason ? ` — ${u.reason}` : ''}`, kind, 6000);
+    }
+  });
+  es.addEventListener('webhook', e => {
+    const ev = JSON.parse(e.data);
+    webhookEvents.unshift(ev); renderWebhooks();
+    for (const u of ev.updates || []) {
+      const kind = u.status === 'APPROVED' ? 'ok' : ['REJECTED', 'DISABLED'].includes(u.status) ? 'bad' : 'warn';
+      toast(`${u.name || u.id}: ${u.status}${u.reason ? ` — ${u.reason}` : ''}`, kind, 6000);
+    }
+  });
+}
+
+// ───────────── wire up ─────────────
+function bind() {
+  $$('.tab-btn').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) { e.preventDefault(); showTab(g.dataset.goto); } });
+
+  $('#f-language').innerHTML = LANGS.map(([v, l]) => `<option value="${v}">${l} — ${v}</option>`).join('');
+  $('#emojiPop').innerHTML = EMOJIS.map(x => `<button type="button" data-emoji="${x}">${x}</button>`).join('');
+
+  $('#f-name').addEventListener('input', e => {
+    const el = e.target; const pos = el.selectionStart;
+    const clean = el.value.toLowerCase().replace(/[\s-]+/g, '_').replace(/[^a-z0-9_]/g, '');
+    if (clean !== el.value) { el.value = clean; const p = Math.min(pos, clean.length); el.setSelectionRange(p, p); }
+    state.name = clean; changed();
+  });
+  $('#f-language').addEventListener('change', e => { state.language = e.target.value; changed(); });
+
+  $('#f-category').addEventListener('click', e => {
+    const b = e.target.closest('button[data-v]'); if (!b) return;
+    state.category = b.dataset.v; applyVisibility(); changed();
+  });
+  $('#f-headerType').addEventListener('click', e => {
+    const b = e.target.closest('button[data-v]'); if (!b || b.dataset.v === state.headerType) return;
+    setHeaderType(b.dataset.v); applyVisibility(); changed();
+  });
+
+  $('#kinds').addEventListener('click', e => { const b = e.target.closest('[data-kind]'); if (b) applyKind(b.dataset.kind); });
+
+  // Carousel layout + cards
+  $('#c-media').addEventListener('change', e => {
+    const c = state.carousel;
+    if (c.cards.some(x => x.handle || cardPreview.has(x.id)) &&
+        !confirm(`Switch every card to ${e.target.value.toLowerCase()}? Media already chosen for the cards will be cleared.`)) {
+      e.target.value = c.media; return;
+    }
+    c.media = e.target.value;
+    c.cards.forEach(x => { x.handle = ''; x.fileName = ''; pendingFiles.delete(x.id); });
+    clearCardPreviews();
+    $('#c-file').accept = MEDIA[c.media].accept;
+    renderCardEditor(); changed();
+  });
+  const onLayoutBtn = () => {
+    state.carousel.buttonTypes = [$('#c-btn0').value, $('#c-btn1').value].filter(Boolean);
+    renderCardEditor(); changed();
+  };
+  $('#c-btn0').addEventListener('change', onLayoutBtn);
+  $('#c-btn1').addEventListener('change', onLayoutBtn);
+  $('#addCardBtn').addEventListener('click', () => {
+    const c = state.carousel; if (c.cards.length >= LIMIT.cards) return;
+    c.cards.push(newCard()); selectCard(c.cards.length - 1);
+    $('#cardEditor textarea')?.focus();
+  });
+  $('#cardTabs').addEventListener('click', e => { const t = e.target.closest('[data-ctab]'); if (t) selectCard(Number(t.dataset.ctab)); });
+  $('#preview').addEventListener('click', e => { const t = e.target.closest('[data-ci]'); if (t) selectCard(Number(t.dataset.ci)); });
+  $('#cardEditor').addEventListener('input', e => {
+    const card = activeCard(); if (!card) return;
+    const el = e.target; const cb = el.closest('.card-btn');
+    if (cb && el.dataset.k) card.buttons[cb.dataset.cb][el.dataset.k] = el.value;
+    else if (el.dataset.ck) card[el.dataset.ck] = el.value;
+    else if (el.dataset.csample) card.samples[el.dataset.csample] = el.value;
+    changed();
+  });
+  $('#cardEditor').addEventListener('mousedown', e => { if (e.target.closest('[data-cfmt]')) e.preventDefault(); });
+  $('#cardEditor').addEventListener('click', e => {
+    const c = state.carousel; const i = c.active; const card = activeCard();
+    const fmt = e.target.closest('[data-cfmt]');
+    if (fmt) {
+      const ta = $('#cardEditor textarea[data-ck="body"]');
+      const f = fmt.dataset.cfmt;
+      if (f === 'var') insertAtCursor(ta, `{{${nextVar(ta.value)}}}`);
+      else wrapSelection(ta, { bold: '*', italic: '_', strike: '~' }[f]);
+      return;
+    }
+    if (e.target.closest('[data-cdrop]')) { $('#c-file').click(); return; }
+    const mv = e.target.closest('[data-cmove]');
+    if (mv && !mv.disabled) {
+      const j = i + Number(mv.dataset.cmove);
+      if (j >= 0 && j < c.cards.length) { [c.cards[i], c.cards[j]] = [c.cards[j], c.cards[i]]; selectCard(j); }
+      return;
+    }
+    if (e.target.closest('[data-cdup]') && c.cards.length < LIMIT.cards) {
+      const copy = { ...JSON.parse(JSON.stringify(card)), id: newCard().id };
+      if (cardPreview.has(card.id)) cardPreview.set(copy.id, cardPreview.get(card.id));
+      if (pendingFiles.has(card.id)) { pendingFiles.set(copy.id, pendingFiles.get(card.id)); uploadKey(copy.id); }
+      c.cards.splice(i + 1, 0, copy); selectCard(i + 1);
+      return;
+    }
+    if (e.target.closest('[data-cdel]') && c.cards.length > 1) {
+      if ((card.body || card.handle) && !confirm(`Delete card ${i + 1}?`)) return;
+      c.cards.splice(i, 1); cardPreview.delete(card.id); pendingFiles.delete(card.id); selectCard(Math.min(i, c.cards.length - 1));
+      return;
+    }
+    const uv = e.target.closest('[data-curlvar]');
+    if (uv) {
+      const cb = uv.closest('.card-btn'); const b = card.buttons[cb.dataset.cb];
+      if (varCount(b.url)) { toast('A URL can only have one variable.', 'warn'); return; }
+      b.url = (b.url || '').trim() + '{{1}}';
+      $('input[data-k="url"]', cb).value = b.url; changed();
+      $('input[data-k="sample"]', cb)?.focus();
+    }
+  });
+  $('#cardEditor').addEventListener('keydown', e => {
+    if (e.target.closest('[data-cdrop]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#c-file').click(); }
+  });
+  $('#cardEditor').addEventListener('dragover', e => { const d = e.target.closest('[data-cdrop]'); if (d) { e.preventDefault(); d.classList.add('over'); } });
+  $('#cardEditor').addEventListener('dragleave', e => { e.target.closest('[data-cdrop]')?.classList.remove('over'); });
+  $('#cardEditor').addEventListener('drop', e => {
+    if (!e.target.closest('[data-cdrop]')) return;
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 1) addCardsFromFiles(files); else onCardFile(files[0]);
+  });
+  $('#c-file').addEventListener('change', e => { onCardFile(e.target.files[0]); e.target.value = ''; });
+  $('#bulkCardsBtn').addEventListener('click', () => { $('#c-files').accept = 'image/jpeg,image/png,video/mp4'; $('#c-files').click(); });
+  $('#c-files').addEventListener('change', e => { addCardsFromFiles(e.target.files); e.target.value = ''; });
+
+  const bindText = (sel, key, sub) => $(sel).addEventListener('input', e => {
+    if (sub) state[sub][key] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    else state[key] = e.target.value;
+    changed();
+  });
+  bindText('#f-headerText', 'headerText');
+  bindText('#f-headerSample', 'headerSample');
+  bindText('#f-headerHandle', 'headerHandle');
+  bindText('#f-body', 'body');
+  bindText('#f-footer', 'footer');
+  bindText('#a-security', 'security', 'auth');
+  bindText('#a-expiry', 'expiry', 'auth');
+  bindText('#a-buttonText', 'buttonText', 'auth');
+  bindText('#a-ttl', 'ttl', 'auth');
+  bindText('#a-package', 'packageName', 'auth');
+  bindText('#a-hash', 'signatureHash', 'auth');
+  $('#a-otpType').addEventListener('change', e => { state.auth.otpType = e.target.value; applyVisibility(); changed(); });
+
+  $('#hdrVarBtn').addEventListener('click', () => {
+    const el = $('#f-headerText');
+    if (varCount(el.value)) { toast('Headers can only have one variable.', 'warn'); return; }
+    insertAtCursor(el, '{{1}}');
+  });
+
+  // Toolbar: mousedown keeps the textarea selection; click runs the action
+  $('#toolbar').addEventListener('mousedown', e => { if (e.target.closest('button')) e.preventDefault(); });
+  $('#toolbar').addEventListener('click', e => { const b = e.target.closest('button[data-fmt]'); if (b) onToolbar(b.dataset.fmt); });
+  $('#emojiPop').addEventListener('mousedown', e => e.preventDefault());
+  $('#emojiPop').addEventListener('click', e => { const b = e.target.closest('[data-emoji]'); if (b) insertAtCursor($('#f-body'), b.dataset.emoji); });
+  $('#f-body').addEventListener('keydown', e => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const k = e.key.toLowerCase();
+    if (k === 'b') { e.preventDefault(); onToolbar('bold'); }
+    if (k === 'i') { e.preventDefault(); onToolbar('italic'); }
+  });
+
+  $('#samples').addEventListener('input', e => {
+    const n = e.target.dataset.sample; if (!n) return;
+    state.samples[n] = e.target.value; changed();
+  });
+
+  // Buttons
+  $$('[data-add]').forEach(b => b.addEventListener('click', () => {
+    const type = b.dataset.add;
+    state.buttons.push(type === 'COPY_CODE' ? { type, example: '' } : type === 'URL' ? { type, text: '', url: '', sample: '' }
+      : type === 'PHONE_NUMBER' ? { type, text: '', phone: '' } : { type, text: '' });
+    renderButtons(); changed();
+    const rows = $$('#buttonsList .btn-row'); $('input', rows[rows.length - 1])?.focus();
+  }));
+  $('#buttonsList').addEventListener('input', e => {
+    const row = e.target.closest('.btn-row'); const k = e.target.dataset.k;
+    if (!row || !k) return;
+    state.buttons[row.dataset.i][k] = e.target.value; changed();
+  });
+  $('#buttonsList').addEventListener('click', e => {
+    const row = e.target.closest('.btn-row'); if (!row) return;
+    const i = Number(row.dataset.i);
+    if (e.target.closest('[data-remove]')) { state.buttons.splice(i, 1); renderButtons(); changed(); }
+    const mv = e.target.closest('[data-move]');
+    if (mv) {
+      const j = i + Number(mv.dataset.move);
+      if (j >= 0 && j < state.buttons.length) { [state.buttons[i], state.buttons[j]] = [state.buttons[j], state.buttons[i]]; renderButtons(); changed(); }
+    }
+    if (e.target.closest('[data-urlvar]')) {
+      const b = state.buttons[i];
+      if (varCount(b.url)) { toast('A URL can only have one variable.', 'warn'); return; }
+      b.url = (b.url || '').trim() + '{{1}}';
+      $('input[data-k="url"]', row).value = b.url; changed();
+      $('input[data-k="sample"]', row)?.focus();
+    }
+  });
+
+  // Media
+  const drop = $('#drop');
+  drop.addEventListener('click', () => $('#f-file').click());
+  drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#f-file').click(); } });
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); onFile(e.dataTransfer.files[0]); });
+  $('#f-file').addEventListener('change', e => { onFile(e.target.files[0]); e.target.value = ''; });
+
+  // Actions
+  $('#newBtn').addEventListener('click', () => {
+    if ((state.name || state.body) && !confirm('Start a new template? The current draft will be cleared.')) return;
+    state = blank();
+    if (headerPreviewUrl) { URL.revokeObjectURL(headerPreviewUrl); headerPreviewUrl = ''; }
+    clearCardPreviews(); pendingFiles.clear();
+    $('#submitResult').innerHTML = '';
+    fillForm(); $('#f-name').focus();
+  });
+  $('#submitBtn').addEventListener('click', submit);
+  $('#copyJsonBtn').addEventListener('click', () => copyText(JSON.stringify(requestBody(), null, 2), 'Request JSON copied'));
+  $('#copyCurlBtn').addEventListener('click', () => copyText(curlCommand(), 'cURL copied — fill in your key and token'));
+
+  // Library
+  $('#libSearch').addEventListener('input', renderLibrary);
+  $('#libStatus').addEventListener('change', renderLibrary);
+  $('#libScope').value = store.get('waba-lib-scope', 'active') === 'all' ? 'all' : 'active';
+  $('#libScope').addEventListener('change', e => { store.set('waba-lib-scope', e.target.value); renderLibrary(); });
+  $('#syncBtn').addEventListener('click', async e => {
+    const b = e.currentTarget; b.disabled = true; b.textContent = 'Syncing…';
+    try {
+      const r = await api('/api/sync', { method: 'POST' });
+      if (r.found) toast(`Synced ${r.found} templates · ${r.added} new · ${r.changed} status changes`, 'ok');
+      else { toast('Exotel returned no templates — showing the raw response.', 'warn'); openDialog('Sync response from Exotel', r.rawResponse); }
+    } catch (err) { toast(err.message, 'bad', 7000); if (err.details) openDialog('Exotel error', err.details); }
+    finally { b.disabled = false; b.textContent = 'Sync from Exotel'; }
+  });
+  $('#libTable').addEventListener('click', async e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const entry = registry.find(x => x.key === b.dataset.key); if (!entry) return;
+    if (b.dataset.act === 'clone') loadIntoEditor(entry);
+    if (b.dataset.act === 'view') openDialog(entry.name, entry);
+    if (b.dataset.act === 'remove') {
+      if (!confirm(`Remove “${entry.name}” from this list?\n\nThis only tidies your local list — the template stays on Exotel/Meta.`)) return;
+      try { await api(`/api/templates/${encodeURIComponent(entry.key)}`, { method: 'DELETE' }); } catch (err) { toast(err.message, 'bad'); }
+    }
+  });
+  $('#dlgClose').addEventListener('click', () => $('#dlg').close());
+  $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg').close(); });
+
+  // Webhook
+  $('#tunnelBase').value = store.get('waba-tunnel', '');
+  $('#tunnelBase').addEventListener('input', e => { store.set('waba-tunnel', e.target.value.trim()); renderWebhookInfo(); });
+  $('#copyWh').addEventListener('click', () => {
+    if (!$('#tunnelBase').value.trim()) { toast('Paste your tunnel address first (step 3).', 'warn'); return; }
+    copyText($('#whFull').textContent, 'Webhook URL copied');
+  });
+  $('#simBtn').addEventListener('click', simulate);
+
+  // Settings
+  $('#settingsForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try { await saveSettings(); $('#settingsResult').innerHTML = ''; } catch (err) { toast(err.message, 'bad'); }
+  });
+  $('#testBtn').addEventListener('click', async () => {
+    const out = $('#settingsResult');
+    out.innerHTML = '<div class="result">Testing…</div>';
+    try {
+      await saveSettings(true);
+      const r = await api('/api/test-connection', { method: 'POST' });
+      if (r.config) { config = r.config; applyConfig(); }
+      out.innerHTML = `<div class="result ${r.ok ? 'ok' : 'bad'}"><b>${r.ok ? 'Connected' : 'Not connected'}</b> — ${esc(r.message)}
+        <details><summary>Exotel response (HTTP ${r.httpStatus})</summary><pre>${esc(JSON.stringify(r.exotel, null, 2))}</pre></details></div>`;
+    } catch (err) { out.innerHTML = `<div class="result bad">${esc(err.message)}</div>`; }
+  });
+  $('#profileSwitch').addEventListener('change', e => switchProfile(e.target.value));
+  $('#profileList').addEventListener('click', e => {
+    const b = e.target.closest('[data-profile]');
+    if (b) switchProfile(b.dataset.profile);
+  });
+  $('#addProfileForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const input = e.target.elements.name;
+    try {
+      config = await api('/api/profiles', { method: 'POST', json: { name: input.value } });
+      input.value = '';
+      applyConfig();
+      toast(`Added ${config.profileName} — fill in its Exotel details`, 'ok', 3500);
+      $('#settingsForm').elements.apiKey.focus();
+    } catch (err) { toast(err.message, 'bad'); }
+  });
+  $('#deleteProfileBtn').addEventListener('click', async () => {
+    if (!confirm(`Delete the account “${config.profileName}”?\n\nIts saved credentials are removed from this computer. Its templates stay in the list (see “All accounts”) and nothing changes on Exotel.`)) return;
+    try {
+      const gone = config.profileName;
+      config = await api(`/api/profiles/${encodeURIComponent(config.profileId)}`, { method: 'DELETE' });
+      applyConfig();
+      toast(`Deleted ${gone} — now using ${config.profileName}`, 'warn', 4000);
+    } catch (err) { toast(err.message, 'bad'); }
+  });
+  $('#regenBtn').addEventListener('click', async () => {
+    if (!confirm('Make a new webhook secret? The current webhook URL will stop working until you update it in Exotel.')) return;
+    try { config = await api('/api/config', { method: 'POST', json: { regenerateSecret: true } }); applyConfig(); toast('New secret created — update the URL in Exotel', 'warn', 6000); }
+    catch (err) { toast(err.message, 'bad'); }
+  });
+}
+
+async function init() {
+  bind();
+  const draft = store.get('waba-draft', null);
+  if (draft && typeof draft === 'object') {
+    const b = blank();
+    state = { ...b, ...draft, auth: { ...b.auth, ...(draft.auth || {}) }, carousel: { ...b.carousel, ...(draft.carousel || {}) } };
+    if (!Array.isArray(state.carousel.cards) || !state.carousel.cards.length) state.carousel.cards = b.carousel.cards;
+  }
+  fillForm();
+  const savedTab = store.get('waba-tab', null);
+  showTab(savedTab || 'compose');
+  try { config = await api('/api/config'); } catch (e) { toast(`Can't reach the local server: ${e.message}`, 'bad', 8000); }
+  applyConfig();
+  if (!config.ready && !savedTab) showTab('settings');
+  try { registry = await api('/api/templates'); } catch { /* shown via toast above */ }
+  renderLibrary();
+  try { webhookEvents = await api('/api/webhooks'); } catch { /* ignore */ }
+  renderWebhooks();
+  connectEvents();
+  changed();
+}
+
+init();
+})();
+</script>
+</body>
+</html>

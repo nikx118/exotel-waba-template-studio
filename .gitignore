@@ -1,0 +1,6 @@
+data/
+node_modules/
+.runtime/
+.DS_Store
+*.log
+*.tmp
